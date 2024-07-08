@@ -1,1 +1,169 @@
-print("internal ui loaded")
+-- LocalScript placed in StarterPlayerScripts or StarterGui
+
+-- Services
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+
+-- Create GUI
+local player = Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ByfronBuddy"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.3, 0, 0.4, 0)
+frame.Position = UDim2.new(0.35, 0, 0.3, 0)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.BorderSizePixel = 0
+frame.Visible = false
+frame.Parent = screenGui
+
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0.1, 0)
+titleBar.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = frame
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 1, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.Text = "ByfronBuddy"
+titleLabel.TextSize = 16
+titleLabel.TextStrokeTransparency = 0.5
+titleLabel.TextXAlignment = Enum.TextXAlignment.Center
+titleLabel.TextYAlignment = Enum.TextYAlignment.Center
+titleLabel.Parent = titleBar
+
+-- Create ScrollingFrame for the TextBox
+local scrollingFrame = Instance.new("ScrollingFrame")
+scrollingFrame.Size = UDim2.new(1, -10, 0.6, -10)
+scrollingFrame.Position = UDim2.new(0, 5, 0.1, 5)
+scrollingFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+scrollingFrame.BorderSizePixel = 0
+scrollingFrame.ScrollBarThickness = 8
+scrollingFrame.Parent = frame
+
+local codeEditor = Instance.new("TextBox")
+codeEditor.Size = UDim2.new(1, 0, 1, 0)
+codeEditor.Position = UDim2.new(0, 0, 0, 0)
+codeEditor.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+codeEditor.TextColor3 = Color3.fromRGB(255, 255, 255)
+codeEditor.TextSize = 12
+codeEditor.MultiLine = true
+codeEditor.ClearTextOnFocus = false
+codeEditor.TextWrapped = true
+codeEditor.TextXAlignment = Enum.TextXAlignment.Left
+codeEditor.TextYAlignment = Enum.TextYAlignment.Top
+codeEditor.PlaceholderText = "Enter Lua Scripts Here"
+codeEditor.Text = ""  -- Clear the textbox upon initialization
+codeEditor.Parent = scrollingFrame
+
+local buttonContainer = Instance.new("Frame")
+buttonContainer.Size = UDim2.new(1, 0, 0.2, -10)
+buttonContainer.Position = UDim2.new(0, 5, 0.7, 5)
+buttonContainer.BackgroundTransparency = 1
+buttonContainer.Parent = frame
+
+local executeButton = Instance.new("TextButton")
+executeButton.Size = UDim2.new(0.45, -5, 1, 0)
+executeButton.Position = UDim2.new(0, 0, 0, 0)
+executeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+executeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+executeButton.Text = "Execute"
+executeButton.TextSize = 14
+executeButton.BorderSizePixel = 0
+executeButton.Parent = buttonContainer
+
+local clearButton = Instance.new("TextButton")
+clearButton.Size = UDim2.new(0.45, -5, 1, 0)
+clearButton.Position = UDim2.new(0.5, 5, 0, 0)
+clearButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+clearButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+clearButton.Text = "Clear"
+clearButton.TextSize = 14
+clearButton.BorderSizePixel = 0
+clearButton.Parent = buttonContainer
+
+-- Draggable functionality
+local dragging = false
+local dragInput, startPos, startPosFrame
+
+local function onDragStart(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		startPos = input.Position
+		startPosFrame = frame.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end
+
+local function onDragMove(input)
+	if dragging then
+		local delta = input.Position - startPos
+		frame.Position = UDim2.new(startPosFrame.X.Scale, startPosFrame.X.Offset + delta.X, startPosFrame.Y.Scale, startPosFrame.Y.Offset + delta.Y)
+	end
+end
+
+titleBar.InputBegan:Connect(onDragStart)
+UserInputService.InputChanged:Connect(onDragMove)
+
+-- Functionality
+local function executeCode()
+	local code = codeEditor.Text
+	-- Use pcall to safely attempt code execution
+	local success, result = pcall(function()
+		-- Use `assert` to run code and catch errors
+		local func = assert(loadstring(code), "Error loading script")
+		func()
+	end)
+	if not success then
+		warn("Error executing code: " .. result)
+	end
+end
+
+executeButton.MouseButton1Click:Connect(executeCode)
+
+clearButton.MouseButton1Click:Connect(function()
+	codeEditor.Text = ""
+end)
+
+-- Fade In/Out functionality
+local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+local fadeInTween = TweenService:Create(frame, tweenInfo, {BackgroundTransparency = 0})
+local fadeOutTween = TweenService:Create(frame, tweenInfo, {BackgroundTransparency = 1})
+
+local titleFadeInTween = TweenService:Create(titleLabel, tweenInfo, {TextTransparency = 0})
+local titleFadeOutTween = TweenService:Create(titleLabel, tweenInfo, {TextTransparency = 1})
+
+local codeEditorFadeInTween = TweenService:Create(codeEditor, tweenInfo, {TextTransparency = 0})
+local codeEditorFadeOutTween = TweenService:Create(codeEditor, tweenInfo, {TextTransparency = 1})
+
+local isVisible = false
+local function toggleFade()
+	if isVisible then
+		fadeOutTween:Play()
+		titleFadeOutTween:Play()
+		codeEditorFadeOutTween:Play()
+		wait(tweenInfo.Time)
+		frame.Visible = false
+	else
+		frame.Visible = true
+		fadeInTween:Play()
+		titleFadeInTween:Play()
+		codeEditorFadeInTween:Play()
+	end
+	isVisible = not isVisible
+end
+
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then return end
+	if input.KeyCode == Enum.KeyCode.Insert then
+		toggleFade()
+	end
+end)
