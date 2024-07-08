@@ -1,5 +1,7 @@
 -- LocalScript in StarterPlayerScripts
 
+print("loaded chat cmds")
+
 -- Function to handle chat messages
 local function onPlayerChatted(message)
     -- Check if the message is from the local player and is "!credits"
