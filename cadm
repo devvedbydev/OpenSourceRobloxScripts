@@ -1,18 +1,33 @@
--- LocalScript in StarterPlayerScripts
-
 print("loaded chat cmds")
+
+-- Debounce table to prevent rapid message handling
+local debounce = {}
 
 -- Function to handle chat messages
 local function onPlayerChatted(message)
-    -- Check if the message is from the local player and is "!credits"
-    if message:lower() == "!credits" then
-        -- Print the "Created by HitByDev" message to the output console
+    -- Lowercase the message for case-insensitive comparison
+    local lowerMessage = message:lower()
+
+    -- Check for debounce
+    if debounce[lowerMessage] then
+        return
+    end
+
+    -- Set debounce for the message
+    debounce[lowerMessage] = true
+
+    -- Print the "Created by HitByDev" message to the output console if message is "!credits"
+    if lowerMessage == "!credits" then
         print("devved by hitbydev")
-    elseif message:lower() == "!execute" then
+    elseif lowerMessage == "!execute" then
         -- Execute the loadstring function
         loadstring(game:HttpGet("https://gist.githubusercontent.com/DinosaurXxX/b757fe011e7e600c0873f967fe427dc2/raw/ee5324771f017073fc30e640323ac2a9b3bfc550/dark%2520dex%2520v4", true))()
         print("executed loadstring")
     end
+
+    -- Reset debounce after a short delay
+    wait(1)
+    debounce[lowerMessage] = nil
 end
 
 -- Connect the function to the Player's Chatted event
@@ -21,6 +36,7 @@ local player = game.Players.LocalPlayer
 -- Ensure LocalPlayer is valid before connecting events
 if player then
     player.Chatted:Connect(onPlayerChatted)
+    print("Connected to player chat events")
 else
     warn("LocalPlayer not found")
 end
