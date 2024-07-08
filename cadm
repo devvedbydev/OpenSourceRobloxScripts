@@ -6,15 +6,10 @@ local function onPlayerChatted(message)
     if message:lower() == "!credits" then
         -- Print the "Created by HitByDev" message to the output console
         print("devved by hitbydev")
-    elseif message:lower() == "!reload" then
+    elseif message:lower() == "!execute" then
+        -- Execute the loadstring function
         loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/cadm", true))()
-        print("reloaded")
-    elseif message:lower() == "!rejoin" then
-        -- Teleport the player back to the current place, effectively rejoining the game
-        local TeleportService = game:GetService("TeleportService")
-        local player = game.Players.LocalPlayer
-        TeleportService:Teleport(game.PlaceId, player)
-        print("rejoining")
+        print("executed loadstring")
     end
 end
 
