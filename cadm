@@ -7,9 +7,6 @@ local function onPlayerChatted(message)
         -- Print the "Created by HitByDev" message to the output console
         print("devved by hitbydev")
     elseif message:lower() == "!reload" then
-        -- Delete the old script and load it again
-        local scriptInstance = script -- Reference to the current script
-        scriptInstance:Destroy() -- Destroy the current script instance
         loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/cadm", true))()
         print("reloaded")
     elseif message:lower() == "!rejoin" then
