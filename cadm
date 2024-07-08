@@ -1,1 +1,3 @@
+-- INTERNAL UI 
+print("INTERNAL UI LOADED, PRESS INSERT")
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal%20ui", true))()
