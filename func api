@@ -47,7 +47,7 @@ local task = table.clone(task)
 local game = game
 local oldGame = game
 
-local Version = '1'
+local Version = '1.1.6'
 
 local isDragging = false
 local dragStartPos = nil
@@ -117,45 +117,6 @@ local ClipboardUI = Instance.new("ScreenGui") -- For setclipboard
 
 local hui = Instance.new("Folder") -- For gethui
 hui.Name = '\0'
-
-function httpget(url)
-    local d,ise,Body=false,false,""
-    game:GetService("HttpService"):RequestInternal({Url = url,Method = "GET"}):Start(function(suc, res) if not suc then Body = res.StatusCode ise = true d=true return end Body=res.Body d=true end)
-    repeat task.wait() until d
-    if ise then error(Body, 0) end return Body
-end
-
-function getgenv()
-    return getfenv(2)
-end
-
-loadstring = getfenv().load_string
-getgenv().loadstring = loadstring
-
-if not getgenv().currGame then
-    getgenv().currGame = game
-end
-local oldGame = getgenv().currGame
-local game = setmetatable({}, {
-    __index = function(t,v)
-        if v == "HttpGet" then
-            return function(_,url)
-                return httpget(url)
-            end
-        end
-        if v == "GetService" then
-            return function(_,a)
-                return oldGame:GetService(a)
-            end
-        end
-        if v == "FindService" then
-            return function(_,a)
-                return oldGame:FindService(a)
-            end
-        end
-        return oldGame[v]
-    end
-})
 
 local ClipboardBox = Instance.new('TextBox', ClipboardUI) -- For setclipboard
 ClipboardBox.Position = UDim2.new(100, 0, 100, 0) -- VERY off screen
