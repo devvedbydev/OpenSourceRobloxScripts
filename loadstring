@@ -37,23 +37,20 @@ local function mockHttpRequest(requestFunc)
     end
 end
 
--- Hook the global HTTP request function
+-- Override HTTP request functions
 local originalHttpRequest
 
-local function hookHttpRequestFunction()
-    -- Look for the global HTTP request function and replace it
-    local mt = getmetatable(game)
-    for k, v in pairs(mt) do
-        if type(v) == "function" and (k == "http.request" or k == "http_request") then
-            originalHttpRequest = v
-            mt[k] = mockHttpRequest(v)
-            break
-        end
-    end
+-- Check and override http.request
+if type(http.request) == "function" then
+    originalHttpRequest = http.request
+    http.request = mockHttpRequest(originalHttpRequest)
 end
 
--- Run the hook function to override the HTTP request function
-hookHttpRequestFunction()
+-- Check and override http_request (for compatibility)
+if type(http_request) == "function" then
+    originalHttpRequest = http_request
+    http_request = mockHttpRequest(originalHttpRequest)
+end
 
 -- INTERNAL GUI
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui"))()
