@@ -1,17 +1,19 @@
--- GLOBAL FUNCTIONS
+-- GLOBAL VARIABLES AND FUNCTIONS
 
+-- Set a global variable
+getgenv().name = "ByfronBuddy"
+
+-- Define global functions
 getgenv().identifyexecutor = function()
-    print("ByfronBuddy")
+    return "ByfronBuddy"
 end
 
-name = "ByfronBuddy"
-
 getgenv().getexecutorname = function()
-    print("ByfronBuddy")
+    return "ByfronBuddy"
 end
 
 getgenv().identity = function()
-    print("ByfronBuddy")
+    return "ByfronBuddy"
 end
 
 getgenv().printidentity = function()
