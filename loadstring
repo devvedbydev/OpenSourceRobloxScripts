@@ -1,8 +1,26 @@
--- WAIT FOR GAME TO LOAD PROPERLY
+local function waitForServices()
+    repeat
+        wait()
+    until game:IsLoaded()
+    repeat
+        wait()
+    until game.Players and game.Workspace and game:GetService("Players") and game:GetService("Workspace")
+    repeat
+        wait()
+    until game.Players.LocalPlayer
+end
 
--- LOAD EXTRA UNC
+print("Waiting for essential services to be available...")
+waitForServices()
+
+print("Waiting an additional 3 seconds...")
+wait(3)
+
+print("Loading extra UNC...")
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/func%20api", true))()
 
--- INTERNAL GUI
+print("Waiting before loading the internal GUI...")
+wait(1)
+
 print("INTERNAL GUI LOADED, PRESS INSERT!!")
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui", true))()
