@@ -1,6 +1,6 @@
 -- INTERNAL UI 
 print("INTERNAL UI LOADED, PRESS INSERT")
-loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal%20ui", true))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui", true))()
 
 -- CHAT ADMIN
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/chat_admin", true))()
