@@ -24,15 +24,6 @@ waitForServices()
 print("Waiting an additional 3 seconds...")
 wait(3)
 
--- Load extra UNC
-print("Loading extra UNC...")
-local uncScript = game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/func%20api", true)
-loadstring(uncScript)()
-
--- Wait 1 second before loading the internal GUI
-print("Waiting before loading the internal GUI...")
-wait(1)
-
 -- Load internal GUI
 print("INTERNAL GUI LOADED, PRESS INSERT!!")
 local internalGuiScript = game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui", true)
