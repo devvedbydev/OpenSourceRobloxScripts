@@ -2,7 +2,7 @@
 local CONFIG = {
     ESPColor = Color3.fromRGB(173, 216, 230), -- Light blue by default
     TargetColor = Color3.fromRGB(255, 255, 255), -- White by default
-    PredictionTime = 0.01 -- Default prediction time
+    PredictionTime = 0.01, -- Default prediction time
     ESPEnabled = true, -- Default ESP enabled state
     TargetStrafe = false, -- Default target strafe state
     StrafeDistance = 6, -- Default strafe distance in studs
@@ -78,7 +78,7 @@ end
 local function predictFuturePosition(character, predictionTime)
     local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
     if not humanoidRootPart then
-        return humanoidRootPart.Position
+        return Vector3.new(0, 0, 0)
     end
 
     local velocity = humanoidRootPart.Velocity
@@ -162,7 +162,9 @@ Commands:
   X - Fully unlock (disable aimlock and strafe)
 ]]
         -- Send binds information to the chat
-        Chat:Chat(LocalPlayer.Character.Head, bindsInfo, Enum.ChatColor.Blue)
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Head") then
+            Chat:Chat(LocalPlayer.Character.Head, bindsInfo, Enum.ChatColor.Blue)
+        end
     end
 end
 
