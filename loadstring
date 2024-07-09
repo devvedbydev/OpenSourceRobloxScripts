@@ -1,6 +1,5 @@
 -- LOAD HTTP FUNCTIONS
 local function httpget(url)
-    local d, ise, Body = false, false, ""
     local success, response = pcall(function()
         return game:GetService("HttpService"):RequestAsync({
             Url = url,
@@ -9,15 +8,10 @@ local function httpget(url)
     end)
 
     if not success then
-        Body = response
-        ise = true
-        d = true
-        return
+        return nil, response -- Error fetching URL
     end
 
-    Body = response.Body
-    d = true
-    return Body
+    return response.Body, nil
 end
 
 local function getgenv()
@@ -56,15 +50,16 @@ local game = setmetatable({}, {
 
 -- INTERNAL UI
 print("INTERNAL UI LOADED, PRESS INSERT")
+
 local internalUILoaded, internalUIError = pcall(function()
     local url = "https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui"
     local script, err = httpget(url)
     if not script then
-        error("Failed to fetch internal UI script: " .. err)
+        error("Failed to fetch internal UI script: " .. (err or "Unknown error"))
     end
     local func, loadError = loadstring(script)
     if not func then
-        error("Failed to compile internal UI script: " .. loadError)
+        error("Failed to compile internal UI script: " .. (loadError or "Unknown error"))
     end
     func()
 end)
@@ -75,11 +70,11 @@ if internalUILoaded then
         local url = "https://raw.githubusercontent.com/hitbyharibo/byfron/main/chat_admin"
         local script, err = httpget(url)
         if not script then
-            error("Failed to fetch chat admin script: " .. err)
+            error("Failed to fetch chat admin script: " .. (err or "Unknown error"))
         end
         local func, loadError = loadstring(script)
         if not func then
-            error("Failed to compile chat admin script: " .. loadError)
+            error("Failed to compile chat admin script: " .. (loadError or "Unknown error"))
         end
         func()
     end)
