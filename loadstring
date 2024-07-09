@@ -22,7 +22,7 @@ end
 
 -- Set loadstring globally if not already set
 if not getgenv().loadstring then
-    getgenv().loadstring = getfenv().load_string
+    getgenv().loadstring = getfenv().loadstring
 end
 
 -- Ensure currGame is set globally
