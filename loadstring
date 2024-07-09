@@ -1,5 +1,22 @@
-print("loading dependencies...")
-wait(8)
-print("loading internal gui!")
+-- GLOBAL FUNCTIONS
+
+getgenv().identifyexecutor = function()
+    print("ByfronBuddy")
+end
+
+name = "ByfronBuddy"
+
+getgenv().getexecutorname = function()
+    print("ByfronBuddy")
+end
+
+getgenv().identity = function()
+    print("ByfronBuddy")
+end
+
+getgenv().printidentity = function()
+    print("ByfronBuddy")
+end
+
+-- INTERNAL GUI
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui"))()
-print("INTERNAL GUI LOADED = TRUE")
