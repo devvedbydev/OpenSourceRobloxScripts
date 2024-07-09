@@ -37,13 +37,17 @@ local function mockHttpRequest(requestFunc)
     end
 end
 
--- Override global HTTP request functions if they exist
+-- Hook HTTP request functions
+-- Check if http.request exists and is a function
 if _G.http and type(_G.http.request) == "function" then
-    _G.http.request = mockHttpRequest(_G.http.request)
+    local originalHttpRequest = _G.http.request
+    _G.http.request = mockHttpRequest(originalHttpRequest)
 end
 
-if _G.http_request and type(_G.http_request) == "function" then
-    _G.http_request = mockHttpRequest(_G.http_request)
+-- Check if http_request exists and is a function
+if type(_G.http_request) == "function" then
+    local originalHttpRequest = _G.http_request
+    _G.http_request = mockHttpRequest(originalHttpRequest)
 end
 
 -- INTERNAL GUI
