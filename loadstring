@@ -1,10 +1,5 @@
--- GLOBAL VARIABLES AND FUNCTIONS
-
 -- Set a global variable
 getgenv().name = "ByfronBuddy"
-
--- Define custom user-agent globally
-getgenv().useragent = "ByfronBuddy BETA"
 
 -- Define global functions
 getgenv().identifyexecutor = function()
@@ -21,33 +16,6 @@ end
 
 getgenv().printidentity = function()
     print("ByfronBuddy")
-end
-
--- Function to mock HTTP requests with a custom user-agent
-local function mockHttpRequest(requestFunc)
-    return function(options)
-        -- Ensure options.Headers is a table
-        options.Headers = options.Headers or {}
-        
-        -- Set or override the User-Agent header
-        options.Headers["User-Agent"] = getgenv().useragent
-        
-        -- Call the original HTTP request function
-        return requestFunc(options)
-    end
-end
-
--- Hook HTTP request functions
--- Check if http.request exists and is a function
-if _G.http and type(_G.http.request) == "function" then
-    local originalHttpRequest = _G.http.request
-    _G.http.request = mockHttpRequest(originalHttpRequest)
-end
-
--- Check if http_request exists and is a function
-if type(_G.http_request) == "function" then
-    local originalHttpRequest = _G.http_request
-    _G.http_request = mockHttpRequest(originalHttpRequest)
 end
 
 -- INTERNAL GUI
