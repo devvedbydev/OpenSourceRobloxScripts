@@ -3,7 +3,7 @@
 -- Set a global variable
 getgenv().name = "ByfronBuddy"
 
-getgenv().userAgent = "ByfronBuddy BETA"
+getgenv().user-agent = "ByfronBuddy BETA"
 
 -- Define global functions
 getgenv().identifyexecutor = function()
