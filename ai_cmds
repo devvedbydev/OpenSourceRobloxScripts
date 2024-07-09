@@ -211,13 +211,10 @@ local function handleCommands(message)
     end
 end
 
--- Toggle aimlock and ESP using chat commands
-UserInputService.InputBegan:Connect(function(input, processed)
-    if not processed and input.UserInputType == Enum.UserInputType.Chat and input.KeyCode == Enum.KeyCode.Return then
-        local message = input.TextBox.Text
-        if message:sub(1, 1) == "." then
-            handleCommands(message)
-        end
+-- Handle chat messages
+LocalPlayer.Chatted:Connect(function(message)
+    if message:sub(1, 1) == "." then
+        handleCommands(message)
     end
 end)
 
