@@ -23,7 +23,7 @@ getgenv().printidentity = function()
     print("ByfronBuddy")
 end
 
--- Function to intercept and mock HTTP requests
+-- Function to mock HTTP requests with a custom user-agent
 local function mockHttpRequest(requestFunc)
     return function(options)
         -- Ensure options.Headers is a table
@@ -37,19 +37,13 @@ local function mockHttpRequest(requestFunc)
     end
 end
 
--- Override HTTP request functions
-local originalHttpRequest
-
--- Check and override http.request
-if type(http.request) == "function" then
-    originalHttpRequest = http.request
-    http.request = mockHttpRequest(originalHttpRequest)
+-- Override global HTTP request functions if they exist
+if _G.http and type(_G.http.request) == "function" then
+    _G.http.request = mockHttpRequest(_G.http.request)
 end
 
--- Check and override http_request (for compatibility)
-if type(http_request) == "function" then
-    originalHttpRequest = http_request
-    http_request = mockHttpRequest(originalHttpRequest)
+if _G.http_request and type(_G.http_request) == "function" then
+    _G.http_request = mockHttpRequest(_G.http_request)
 end
 
 -- INTERNAL GUI
