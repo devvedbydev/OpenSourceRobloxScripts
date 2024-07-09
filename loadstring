@@ -3,7 +3,7 @@
 -- Set a global variable
 getgenv().name = "ByfronBuddy"
 
-getgenv().user-agent = "ByfronBuddy BETA"
+-- Define custom user-agent globally
 getgenv().useragent = "ByfronBuddy BETA"
 
 -- Define global functions
@@ -22,6 +22,38 @@ end
 getgenv().printidentity = function()
     print("ByfronBuddy")
 end
+
+-- Function to intercept and mock HTTP requests
+local function mockHttpRequest(requestFunc)
+    return function(options)
+        -- Ensure options.Headers is a table
+        options.Headers = options.Headers or {}
+        
+        -- Set or override the User-Agent header
+        options.Headers["User-Agent"] = getgenv().useragent
+        
+        -- Call the original HTTP request function
+        return requestFunc(options)
+    end
+end
+
+-- Hook the global HTTP request function
+local originalHttpRequest
+
+local function hookHttpRequestFunction()
+    -- Look for the global HTTP request function and replace it
+    local mt = getmetatable(game)
+    for k, v in pairs(mt) do
+        if type(v) == "function" and (k == "http.request" or k == "http_request") then
+            originalHttpRequest = v
+            mt[k] = mockHttpRequest(v)
+            break
+        end
+    end
+end
+
+-- Run the hook function to override the HTTP request function
+hookHttpRequestFunction()
 
 -- INTERNAL GUI
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui"))()
