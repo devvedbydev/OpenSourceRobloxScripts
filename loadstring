@@ -1,20 +1,20 @@
 -- INTERNAL UI
 print("INTERNAL UI LOADED, PRESS INSERT")
 local internalUILoaded, internalUIError = pcall(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui", true))()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui', true))()
 end)
 
 if internalUILoaded then
     -- CHAT ADMIN
     local chatAdminLoaded, chatAdminError = pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/chat_admin", true))()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/hitbyharibo/byfron/main/chat_admin', true))()
     end)
     
     if not chatAdminLoaded then
-        warn("Failed to load CHAT ADMIN:", chatAdminError)
+        warn('Failed to load CHAT ADMIN:', chatAdminError)
     end
 else
-    warn("Failed to load INTERNAL UI:", internalUIError)
+    warn('Failed to load INTERNAL UI:', internalUIError)
 end
 
 -- OTHER SHI
