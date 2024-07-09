@@ -4,7 +4,7 @@ getgenv().identifyexecutor = function()
     print("ByfronBuddy")
 end
 
-# name = "ByfronBuddy"
+name = "ByfronBuddy"
 
 getgenv().getexecutorname = function()
     print("ByfronBuddy")
