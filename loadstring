@@ -4,6 +4,7 @@
 getgenv().name = "ByfronBuddy"
 
 getgenv().user-agent = "ByfronBuddy BETA"
+getgenv().useragent = "ByfronBuddy BETA"
 
 -- Define global functions
 getgenv().identifyexecutor = function()
