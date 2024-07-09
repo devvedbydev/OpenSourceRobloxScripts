@@ -1,0 +1,173 @@
+-- Configuration
+local CONFIG = {
+    ESPColor = Color3.fromRGB(173, 216, 230), -- Light blue by default
+    TargetColor = Color3.fromRGB(255, 255, 255), -- White by default
+    PredictionTime = 0.2, -- Default prediction time
+    ESPEnabled = true, -- Default ESP enabled state
+    AimlockEnabled = true -- Default aimlock enabled state
+}
+
+-- Local Variables
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+local aimlockEnabled = CONFIG.AimlockEnabled
+local espeEnabled = CONFIG.ESPEnabled
+local targetPlayer = nil
+
+-- Function to create or update a Highlight effect
+local function updateHighlight(character, color)
+    local highlight = character:FindFirstChild("Highlight")
+    if not highlight then
+        highlight = Instance.new("Highlight")
+        highlight.Name = "Highlight"
+        highlight.Adornee = character
+        highlight.Parent = character
+    end
+    highlight.FillColor = color
+    highlight.FillTransparency = 0.5
+    highlight.OutlineColor = color
+    highlight.OutlineTransparency = 0.3
+end
+
+-- Function to remove the Highlight effect
+local function removeHighlight(character)
+    local highlight = character:FindFirstChild("Highlight")
+    if highlight then
+        highlight:Destroy()
+    end
+end
+
+-- Function to find the closest player to the mouse cursor
+local function getClosestPlayerToCursor()
+    local mouse = LocalPlayer:GetMouse()
+    local closestPlayer = nil
+    local shortestDistance = math.huge
+
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local character = player.Character
+            local characterPosition = character.HumanoidRootPart.Position
+            local screenPosition, onScreen = Camera:WorldToScreenPoint(characterPosition)
+
+            if onScreen then
+                local mousePosition = Vector2.new(mouse.X, mouse.Y)
+                local distance = (Vector2.new(screenPosition.X, screenPosition.Y) - mousePosition).Magnitude
+
+                if distance < shortestDistance then
+                    shortestDistance = distance
+                    closestPlayer = player
+                end
+            end
+        end
+    end
+
+    return closestPlayer
+end
+
+-- Function to predict the future position of a player
+local function predictFuturePosition(character, predictionTime)
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then
+        return humanoidRootPart.Position
+    end
+
+    local velocity = humanoidRootPart.Velocity
+    local futurePosition = humanoidRootPart.Position + (velocity * predictionTime)
+    return futurePosition
+end
+
+-- Function to handle aimlock logic
+local function handleAimlock()
+    if aimlockEnabled and targetPlayer and targetPlayer.Character then
+        local character = targetPlayer.Character
+        local predictedPosition = predictFuturePosition(character, CONFIG.PredictionTime)
+
+        -- Update camera CFrame to aim at the predicted position
+        local cameraPosition = Camera.CFrame.Position
+        Camera.CFrame = CFrame.new(cameraPosition, predictedPosition)
+    end
+end
+
+-- Toggle aimlock on/off with the Q key
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+
+    if input.KeyCode == Enum.KeyCode.Q then
+        aimlockEnabled = not aimlockEnabled
+        if aimlockEnabled then
+            targetPlayer = getClosestPlayerToCursor()
+            if targetPlayer then
+                print("Aimlock enabled. Targeting: " .. targetPlayer.Name)
+            else
+                print("No target found.")
+            end
+        else
+            targetPlayer = nil
+            print("Aimlock disabled.")
+        end
+    end
+
+    -- Toggle ESP on/off with the E key
+    if input.KeyCode == Enum.KeyCode.E then
+        espeEnabled = not espeEnabled
+        if espeEnabled then
+            print("ESP enabled.")
+        else
+            print("ESP disabled.")
+            -- Remove all existing highlights if ESP is disabled
+            for _, player in ipairs(Players:GetPlayers()) do
+                if player.Character then
+                    removeHighlight(player.Character)
+                end
+            end
+        end
+    end
+end)
+
+-- Update highlights and aimlock logic continuously
+RunService.RenderStepped:Connect(function()
+    if espeEnabled then
+        -- Update highlights for all players
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character then
+                if player == targetPlayer then
+                    updateHighlight(player.Character, CONFIG.TargetColor) -- Target color
+                else
+                    updateHighlight(player.Character, CONFIG.ESPColor) -- ESP color
+                end
+            end
+        end
+    else
+        -- Remove highlights if ESP is disabled
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character then
+                removeHighlight(player.Character)
+            end
+        end
+    end
+
+    -- Handle aimlock logic if enabled
+    handleAimlock()
+end)
+
+-- Connect to PlayerAdded event to handle new players joining
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        if player ~= LocalPlayer and espeEnabled then
+            updateHighlight(character, CONFIG.ESPColor) -- ESP color for new players
+        end
+    end)
+end)
+
+-- Optionally, if you want to keep updating as players leave or join
+Players.PlayerRemoving:Connect(function(player)
+    if player.Character then
+        if espeEnabled then
+            removeHighlight(player.Character)
+        end
+    end
+end)
