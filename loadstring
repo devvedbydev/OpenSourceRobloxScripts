@@ -1,26 +1,39 @@
+-- Function to wait until the essential services are available
 local function waitForServices()
+    -- Wait until the game is fully loaded
     repeat
         wait()
     until game:IsLoaded()
+
+    -- Ensure essential services are available
     repeat
         wait()
     until game.Players and game.Workspace and game:GetService("Players") and game:GetService("Workspace")
+
+    -- Optionally wait until LocalPlayer is available
     repeat
         wait()
     until game.Players.LocalPlayer
 end
 
+-- Wait for the essential services
 print("Waiting for essential services to be available...")
 waitForServices()
 
+-- Wait an additional 3 seconds
 print("Waiting an additional 3 seconds...")
 wait(3)
 
+-- Load extra UNC
 print("Loading extra UNC...")
-loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/func%20api", true))()
+local uncScript = game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/func%20api", true)
+loadstring(uncScript)()
 
+-- Wait 1 second before loading the internal GUI
 print("Waiting before loading the internal GUI...")
 wait(1)
 
+-- Load internal GUI
 print("INTERNAL GUI LOADED, PRESS INSERT!!")
-loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui", true))()
+local internalGuiScript = game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui", true)
+loadstring(internalGuiScript)()
