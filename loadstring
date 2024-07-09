@@ -46,6 +46,9 @@ local game = setmetatable({}, {
     end
 })
 
+-- TEMP UNC FIX??
+loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/func%20api", true))()
+
 -- INTERNAL UI
 print("INTERNAL UI LOADED, PRESS INSERT")
 local internalUILoaded, internalUIError = pcall(function()
