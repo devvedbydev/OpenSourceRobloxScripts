@@ -1,5 +1,5 @@
 -- Define the global function 'fireclickdetector'
-getgenv().fireclickdetector = function(clickDetector)
+getgenv().fireclickdetector = function(clickDetector, clickPosition, eventType)
     -- Validate input
     if not (clickDetector and clickDetector:IsA("ClickDetector")) then
         warn("Provided object is not a ClickDetector.")
@@ -13,14 +13,19 @@ getgenv().fireclickdetector = function(clickDetector)
         return
     end
 
-    -- Get the click position, assuming the click happens at the center of the ClickDetector's parent
-    local clickPosition = clickDetector.Parent.Position
+    -- Simulate a click
+    -- Create a Vector3 position for the click
+    local clickPositionVector = Vector3.new(0, 0, 0) -- Default click position
+
+    if clickPosition then
+        -- Adjust clickPositionVector based on the provided clickPosition
+        clickPositionVector = clickDetector.Parent.Position + Vector3.new(clickPosition, 0, 0) -- Example adjustment
+    end
 
     -- Trigger the MouseClick event
-    -- Note: Roblox ClickDetectors do not have a public method to fire events. This is simulated for testing purposes.
     if clickDetector.MouseClick then
-        -- Trigger MouseClick event with the LocalPlayer and click position
-        clickDetector.MouseClick:Fire(player, clickPosition)
+        -- Simulate MouseClick with player and position
+        clickDetector.MouseClick:Fire(player, clickPositionVector)
     else
         warn("MouseClick event is not available on this ClickDetector.")
     end
