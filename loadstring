@@ -20,10 +20,3 @@ end
 
 -- INTERNAL GUI
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui"))()
-
-repeat task.wait() until game:IsLoaded()
-
-local Success, Data       = pcall(game.HttpGet, game, "https://raw.githubusercontent.com/lncoognito/Roblox-WS/main/Client.lua")
-local Success, Function   = pcall(loadstring, Data)
-
-Function()
