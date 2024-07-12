@@ -1,0 +1,9 @@
+function hookfunction(originalFunction, newFunction)
+    local oldFunction = originalFunction
+    local meta = getrawmetatable(getfenv(originalFunction))
+    setreadonly(meta, false)
+    meta.__call = function(_, ...)
+        return newFunction(...)
+    end
+    setreadonly(meta, true)
+end
