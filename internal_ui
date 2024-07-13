@@ -9,7 +9,7 @@ local CoreGui = game:GetService("CoreGui")
 -- Create GUI
 local player = Players.LocalPlayer
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "ByfronBuddy"
+screenGui.Name = "SystemHook"
 screenGui.Parent = CoreGui  -- Changed to CoreGui
 
 local frame = Instance.new("Frame")
@@ -30,7 +30,7 @@ local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, 0, 1, 0)
 titleLabel.BackgroundTransparency = 1
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.Text = "ByfronBuddy"
+titleLabel.Text = "SystemHook"
 titleLabel.TextSize = 16
 titleLabel.TextStrokeTransparency = 0.5
 titleLabel.TextXAlignment = Enum.TextXAlignment.Center
