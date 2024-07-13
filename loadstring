@@ -1,24 +1,26 @@
 -- Set a global variable
-getgenv().name = "ByfronBuddy"
+getgenv().name = "SystemHook"
+
+getgenv().identity = "SystemHook"
 
 -- Define global functions
 getgenv().identifyexecutor = function()
-    return "ByfronBuddy"
+    return "SystemHook"
 end
 
 getgenv().getexecutorname = function()
-    return "ByfronBuddy"
+    return "SystemHook"
 end
 
 getgenv().identity = function()
-    return "ByfronBuddy"
+    return "SystemHook"
 end
 
 getgenv().printidentity = function()
-    print("ByfronBuddy")
+    print("SystemHook")
 end
 
-print("Welcome " .. game.Players.LocalPlayer.DisplayName .. ", thank you for choosing ByfronBuddy.")
+print("Welcome " .. game.Players.LocalPlayer.DisplayName .. ", thank you for choosing SystemHook.")
 
 -- INTERNAL GUI
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui"))()
