@@ -7,8 +7,8 @@ local Camera = workspace.CurrentCamera
 local HumanoidRootPart = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 
 local CONFIG = {
-    FlySpeed = 1,
-    VehicleFlySpeed = 1,
+    FlySpeed = 5,
+    VehicleFlySpeed = 5,
     QEfly = true,
 }
 
