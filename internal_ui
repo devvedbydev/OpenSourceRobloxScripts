@@ -1,170 +1,1015 @@
--- LocalScript placed in StarterPlayerScripts or StarterGui
+local ts = game:GetService("TweenService")
+local uis = game:GetService("UserInputService")
+local tweeninfo = TweenInfo.new(0.1, Enum.EasingStyle.Linear)
+local function initui()
+	local G2L = {};
 
--- Services
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local Players = game:GetService("Players")
-local CoreGui = game:GetService("CoreGui")
+	-- StarterGui.SystemHook
+	G2L["1"] = Instance.new("ScreenGui", game:GetService("CoreGui"));
+	G2L["1"]["IgnoreGuiInset"] = true;
+	G2L["1"]["ScreenInsets"] = Enum.ScreenInsets.DeviceSafeInsets;
+	G2L["1"]["Name"] = [[SystemHook]];
+	G2L["1"]["ResetOnSpawn"] = false;
 
--- Create GUI
-local player = Players.LocalPlayer
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "SystemHook"
-screenGui.Parent = CoreGui  -- Changed to CoreGui
+	-- StarterGui.SystemHook.UI
+	G2L["2"] = Instance.new("Frame", G2L["1"]);
+	G2L["2"]["BorderSizePixel"] = 0;
+	G2L["2"]["BackgroundColor3"] = Color3.fromRGB(11, 15, 19);
+	G2L["2"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
+	G2L["2"]["Size"] = UDim2.new(0, 570, 0, 319);
+	G2L["2"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["2"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
+	G2L["2"]["Name"] = [[UI]];
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0.3, 0, 0.4, 0)
-frame.Position = UDim2.new(0.35, 0, 0.3, 0)
-frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-frame.BorderSizePixel = 0
-frame.Visible = false
-frame.Parent = screenGui
+	-- StarterGui.SystemHook.UI.UICorner
+	G2L["3"] = Instance.new("UICorner", G2L["2"]);
 
-local titleBar = Instance.new("Frame")
-titleBar.Size = UDim2.new(1, 0, 0.1, 0)
-titleBar.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-titleBar.BorderSizePixel = 0
-titleBar.Parent = frame
 
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(1, 0, 1, 0)
-titleLabel.BackgroundTransparency = 1
-titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.Text = "SystemHook"
-titleLabel.TextSize = 16
-titleLabel.TextStrokeTransparency = 0.5
-titleLabel.TextXAlignment = Enum.TextXAlignment.Center
-titleLabel.TextYAlignment = Enum.TextYAlignment.Center
-titleLabel.Parent = titleBar
+	-- StarterGui.SystemHook.UI.Top
+	G2L["4"] = Instance.new("Frame", G2L["2"]);
+	G2L["4"]["BorderSizePixel"] = 0;
+	G2L["4"]["BackgroundColor3"] = Color3.fromRGB(23, 31, 40);
+	G2L["4"]["Size"] = UDim2.new(1, 0, 0, 33);
+	G2L["4"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["4"]["Name"] = [[Top]];
 
--- Create ScrollingFrame for the TextBox
-local scrollingFrame = Instance.new("ScrollingFrame")
-scrollingFrame.Size = UDim2.new(1, -10, 0.6, -10)
-scrollingFrame.Position = UDim2.new(0, 5, 0.1, 5)
-scrollingFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-scrollingFrame.BorderSizePixel = 0
-scrollingFrame.ScrollBarThickness = 8
-scrollingFrame.Parent = frame
+	-- StarterGui.SystemHook.UI.Top.UICorner
+	G2L["5"] = Instance.new("UICorner", G2L["4"]);
 
-local codeEditor = Instance.new("TextBox")
-codeEditor.Size = UDim2.new(1, 0, 1, 0)
-codeEditor.Position = UDim2.new(0, 0, 0, 0)
-codeEditor.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-codeEditor.TextColor3 = Color3.fromRGB(255, 255, 255)
-codeEditor.TextSize = 12
-codeEditor.MultiLine = true
-codeEditor.ClearTextOnFocus = false
-codeEditor.TextWrapped = true
-codeEditor.TextXAlignment = Enum.TextXAlignment.Left
-codeEditor.TextYAlignment = Enum.TextYAlignment.Top
-codeEditor.PlaceholderText = "Enter Lua Scripts Here"
-codeEditor.Text = ""  -- Clear the textbox upon initialization
-codeEditor.Parent = scrollingFrame
 
-local buttonContainer = Instance.new("Frame")
-buttonContainer.Size = UDim2.new(1, 0, 0.2, -10)
-buttonContainer.Position = UDim2.new(0, 5, 0.7, 5)
-buttonContainer.BackgroundTransparency = 1
-buttonContainer.Parent = frame
+	-- StarterGui.SystemHook.UI.Top.Cover
+	G2L["6"] = Instance.new("Frame", G2L["4"]);
+	G2L["6"]["BorderSizePixel"] = 0;
+	G2L["6"]["BackgroundColor3"] = Color3.fromRGB(23, 31, 40);
+	G2L["6"]["Size"] = UDim2.new(1, 0, 0, 8);
+	G2L["6"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["6"]["Position"] = UDim2.new(0, 0, 1, -8);
+	G2L["6"]["Name"] = [[Cover]];
 
-local executeButton = Instance.new("TextButton")
-executeButton.Size = UDim2.new(0.45, -5, 1, 0)
-executeButton.Position = UDim2.new(0, 0, 0, 0)
-executeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-executeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-executeButton.Text = "Execute"
-executeButton.TextSize = 14
-executeButton.BorderSizePixel = 0
-executeButton.Parent = buttonContainer
+	-- StarterGui.SystemHook.UI.Top.Header
+	G2L["7"] = Instance.new("TextLabel", G2L["4"]);
+	G2L["7"]["BorderSizePixel"] = 0;
+	G2L["7"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["7"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+	G2L["7"]["FontFace"] = Font.new([[rbxasset://fonts/families/GothamSSm.json]], Enum.FontWeight.Medium, Enum.FontStyle.Normal);
+	G2L["7"]["TextSize"] = 13;
+	G2L["7"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["7"]["Size"] = UDim2.new(1, 0, 1, 0);
+	G2L["7"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["7"]["Text"] = [[SystemHook]];
+	G2L["7"]["Name"] = [[Header]];
+	G2L["7"]["BackgroundTransparency"] = 1;
 
-local clearButton = Instance.new("TextButton")
-clearButton.Size = UDim2.new(0.45, -5, 1, 0)
-clearButton.Position = UDim2.new(0.5, 5, 0, 0)
-clearButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-clearButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-clearButton.Text = "Clear"
-clearButton.TextSize = 14
-clearButton.BorderSizePixel = 0
-clearButton.Parent = buttonContainer
+	-- StarterGui.SystemHook.UI.Top.Header.UIPadding
+	G2L["8"] = Instance.new("UIPadding", G2L["7"]);
+	G2L["8"]["PaddingBottom"] = UDim.new(0, 1);
+	G2L["8"]["PaddingLeft"] = UDim.new(0, 8);
 
--- Draggable functionality
-local dragging = false
-local dragInput, startPos, startPosFrame
+	-- StarterGui.SystemHook.UI.Top.Header.Version
+	G2L["9"] = Instance.new("TextLabel", G2L["7"]);
+	G2L["9"]["BorderSizePixel"] = 0;
+	G2L["9"]["BackgroundColor3"] = Color3.fromRGB(52, 71, 91);
+	G2L["9"]["FontFace"] = Font.new([[rbxasset://fonts/families/GothamSSm.json]], Enum.FontWeight.Medium, Enum.FontStyle.Normal);
+	G2L["9"]["TextSize"] = 13;
+	G2L["9"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["9"]["AnchorPoint"] = Vector2.new(0, 0.5);
+	G2L["9"]["AutomaticSize"] = Enum.AutomaticSize.X;
+	G2L["9"]["Size"] = UDim2.new(0, 0, 0, 23);
+	G2L["9"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["9"]["Text"] = [[v1.0b]];
+	G2L["9"]["Name"] = [[Version]];
+	G2L["9"]["Position"] = UDim2.new(0, 84, 0.5, 0);
 
-local function onDragStart(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-		startPos = input.Position
-		startPosFrame = frame.Position
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
+	-- StarterGui.SystemHook.UI.Top.Header.Version.UIPadding
+	G2L["a"] = Instance.new("UIPadding", G2L["9"]);
+	G2L["a"]["PaddingRight"] = UDim.new(0, 6);
+	G2L["a"]["PaddingLeft"] = UDim.new(0, 6);
+
+	-- StarterGui.SystemHook.UI.Top.Header.Version.UICorner
+	G2L["b"] = Instance.new("UICorner", G2L["9"]);
+	G2L["b"]["CornerRadius"] = UDim.new(0, 6);
+
+	-- StarterGui.SystemHook.UI.Top.Hide
+	G2L["c"] = Instance.new("ImageButton", G2L["4"]);
+	G2L["c"]["BorderSizePixel"] = 0;
+	G2L["c"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["c"]["Size"] = UDim2.new(0, 33, 0, 33);
+	G2L["c"]["Name"] = [[Hide]];
+	G2L["c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["c"]["Position"] = UDim2.new(1, -33, 0, 0);
+	G2L["c"]["BackgroundTransparency"] = 1;
+
+	-- StarterGui.SystemHook.UI.Top.Hide.Icon
+	G2L["d"] = Instance.new("ImageLabel", G2L["c"]);
+	G2L["d"]["BorderSizePixel"] = 0;
+	G2L["d"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["d"]["ImageTransparency"] = 0.4000000059604645;
+	G2L["d"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
+	G2L["d"]["Image"] = [[rbxassetid://7072725342]];
+	G2L["d"]["Size"] = UDim2.new(0.5, 0, 0.5, 0);
+	G2L["d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["d"]["Name"] = [[Icon]];
+	G2L["d"]["BackgroundTransparency"] = 1;
+	G2L["d"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
+
+	-- StarterGui.SystemHook.UI.Top.Minimize
+	G2L["e"] = Instance.new("ImageButton", G2L["4"]);
+	G2L["e"]["BorderSizePixel"] = 0;
+	G2L["e"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["e"]["Size"] = UDim2.new(0, 33, 0, 33);
+	G2L["e"]["Name"] = [[Minimize]];
+	G2L["e"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["e"]["Position"] = UDim2.new(1, -66, 0, 0);
+	G2L["e"]["BackgroundTransparency"] = 1;
+
+	-- StarterGui.SystemHook.UI.Top.Minimize.Icon
+	G2L["f"] = Instance.new("ImageLabel", G2L["e"]);
+	G2L["f"]["BorderSizePixel"] = 0;
+	G2L["f"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["f"]["ImageTransparency"] = 0.4000000059604645;
+	G2L["f"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
+	G2L["f"]["Image"] = [[rbxassetid://7072719338]];
+	G2L["f"]["Size"] = UDim2.new(0.5, 0, 0.5, 0);
+	G2L["f"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["f"]["Name"] = [[Icon]];
+	G2L["f"]["BackgroundTransparency"] = 1;
+	G2L["f"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
+
+	-- StarterGui.SystemHook.UI.Display
+	G2L["10"] = Instance.new("Frame", G2L["2"]);
+	G2L["10"]["BorderSizePixel"] = 0;
+	G2L["10"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["10"]["BackgroundTransparency"] = 1;
+	G2L["10"]["Size"] = UDim2.new(1, 0, 1, 0);
+	G2L["10"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["10"]["Name"] = [[Display]];
+
+	-- StarterGui.SystemHook.UI.Display.Content
+	G2L["11"] = Instance.new("Frame", G2L["10"]);
+	G2L["11"]["BorderSizePixel"] = 0;
+	G2L["11"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["11"]["BackgroundTransparency"] = 1;
+	G2L["11"]["Size"] = UDim2.new(1, 0, 1, 0);
+	G2L["11"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["11"]["Name"] = [[Content]];
+
+	-- StarterGui.SystemHook.UI.Display.Content.Editor
+	G2L["12"] = Instance.new("Frame", G2L["11"]);
+	G2L["12"]["BorderSizePixel"] = 0;
+	G2L["12"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["12"]["BackgroundTransparency"] = 1;
+	G2L["12"]["Size"] = UDim2.new(1, -155, 1, -40);
+	G2L["12"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["12"]["Position"] = UDim2.new(0, 155, 0, 0);
+	G2L["12"]["Name"] = [[Editor]];
+
+	-- StarterGui.SystemHook.UI.Display.Content.Editor.EditorFrame
+	G2L["13"] = Instance.new("ScrollingFrame", G2L["12"]);
+	G2L["13"]["Active"] = true;
+	G2L["13"]["BorderSizePixel"] = 0;
+	G2L["13"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
+	G2L["13"]["BackgroundColor3"] = Color3.fromRGB(11, 15, 19);
+	G2L["13"]["AutomaticCanvasSize"] = Enum.AutomaticSize.XY;
+	G2L["13"]["Size"] = UDim2.new(1, 10, 1, -58);
+	G2L["13"]["ScrollBarImageColor3"] = Color3.fromRGB(52, 71, 91);
+	G2L["13"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["13"]["ScrollBarThickness"] = 8;
+	G2L["13"]["Position"] = UDim2.new(0, -10, 0, 46);
+	G2L["13"]["Name"] = [[EditorFrame]];
+
+	-- StarterGui.SystemHook.UI.Display.Content.Editor.EditorFrame.Lines
+	G2L["14"] = Instance.new("TextLabel", G2L["13"]);
+	G2L["14"]["BorderSizePixel"] = 0;
+	G2L["14"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+	G2L["14"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["14"]["FontFace"] = Font.new([[rbxasset://fonts/families/Inconsolata.json]], Enum.FontWeight.Medium, Enum.FontStyle.Normal);
+	G2L["14"]["TextSize"] = 14;
+	G2L["14"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["14"]["AutomaticSize"] = Enum.AutomaticSize.Y;
+	G2L["14"]["Size"] = UDim2.new(0, 40, 0, 20);
+	G2L["14"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["14"]["Text"] = [[1]];
+	G2L["14"]["Name"] = [[Lines]];
+	G2L["14"]["BackgroundTransparency"] = 1;
+	G2L["14"]["Position"] = UDim2.new(0, 0, 0, 1);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Editor.EditorFrame.Lines.UIPadding
+	G2L["15"] = Instance.new("UIPadding", G2L["14"]);
+	G2L["15"]["PaddingTop"] = UDim.new(0, 2);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Editor.EditorFrame.Source
+	G2L["16"] = Instance.new("TextBox", G2L["13"]);
+	G2L["16"]["CursorPosition"] = -1;
+	G2L["16"]["BorderSizePixel"] = 0;
+	G2L["16"]["TextSize"] = 14;
+	G2L["16"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+	G2L["16"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+	G2L["16"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["16"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["16"]["FontFace"] = Font.new([[rbxasset://fonts/families/Inconsolata.json]], Enum.FontWeight.Medium, Enum.FontStyle.Normal);
+	G2L["16"]["MultiLine"] = true;
+	G2L["16"]["BackgroundTransparency"] = 1;
+	G2L["16"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["16"]["Text"] = [[]];
+	G2L["16"]["Position"] = UDim2.new(0, 45, 0, 0);
+	G2L["16"]["AutomaticSize"] = Enum.AutomaticSize.XY;
+	G2L["16"]["Name"] = [[Source]];
+	G2L["16"]["ClearTextOnFocus"] = false;
+
+	-- StarterGui.SystemHook.UI.Display.Content.Editor.EditorFrame.Source.UIPadding
+	G2L["17"] = Instance.new("UIPadding", G2L["16"]);
+	G2L["17"]["PaddingTop"] = UDim.new(0, 3);
+	G2L["17"]["PaddingRight"] = UDim.new(0, 140);
+	G2L["17"]["PaddingBottom"] = UDim.new(0, 80);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Editor.TabsFrame
+	G2L["18"] = Instance.new("ScrollingFrame", G2L["12"]);
+	G2L["18"]["Active"] = true;
+	G2L["18"]["ScrollingDirection"] = Enum.ScrollingDirection.X;
+	G2L["18"]["BorderSizePixel"] = 0;
+	G2L["18"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
+	G2L["18"]["BackgroundColor3"] = Color3.fromRGB(11, 15, 19);
+	G2L["18"]["AutomaticCanvasSize"] = Enum.AutomaticSize.X;
+	G2L["18"]["Size"] = UDim2.new(1, 10, 0, 38);
+	G2L["18"]["ScrollBarImageColor3"] = Color3.fromRGB(52, 71, 91);
+	G2L["18"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["18"]["ScrollBarThickness"] = 0;
+	G2L["18"]["Position"] = UDim2.new(0, -10, 0, 0);
+	G2L["18"]["Name"] = [[TabsFrame]];
+
+	-- StarterGui.SystemHook.UI.Display.Content.Editor.TabsFrame.UIListLayout
+	G2L["19"] = Instance.new("UIListLayout", G2L["18"]);
+	G2L["19"]["VerticalAlignment"] = Enum.VerticalAlignment.Center;
+	G2L["19"]["FillDirection"] = Enum.FillDirection.Horizontal;
+	G2L["19"]["Padding"] = UDim.new(0, 5);
+	G2L["19"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+
+	-- StarterGui.SystemHook.UI.Display.Content.Editor.TabsFrame.UIPadding
+	G2L["1a"] = Instance.new("UIPadding", G2L["18"]);
+	G2L["1a"]["PaddingRight"] = UDim.new(0, 6);
+	G2L["1a"]["PaddingBottom"] = UDim.new(0, 1);
+	G2L["1a"]["PaddingLeft"] = UDim.new(0, 6);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Editor.TabsFrame.Add
+	G2L["1b"] = Instance.new("ImageButton", G2L["18"]);
+	G2L["1b"]["BorderSizePixel"] = 0;
+	G2L["1b"]["AutoButtonColor"] = false;
+	G2L["1b"]["BackgroundColor3"] = Color3.fromRGB(21, 28, 36);
+	G2L["1b"]["LayoutOrder"] = 999999;
+	G2L["1b"]["Size"] = UDim2.new(0, 25, 0, 25);
+	G2L["1b"]["Name"] = [[Add]];
+	G2L["1b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Editor.TabsFrame.Add.UICorner
+	G2L["1c"] = Instance.new("UICorner", G2L["1b"]);
+	G2L["1c"]["CornerRadius"] = UDim.new(0, 5);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Editor.TabsFrame.Add.Icon
+	G2L["1d"] = Instance.new("ImageLabel", G2L["1b"]);
+	G2L["1d"]["BorderSizePixel"] = 0;
+	G2L["1d"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["1d"]["ImageTransparency"] = 0.4000000059604645;
+	G2L["1d"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
+	G2L["1d"]["Image"] = [[rbxassetid://7072720870]];
+	G2L["1d"]["Size"] = UDim2.new(0.699999988079071, 0, 0.699999988079071, 0);
+	G2L["1d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["1d"]["Name"] = [[Icon]];
+	G2L["1d"]["BackgroundTransparency"] = 1;
+	G2L["1d"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Editor.TabsFrame.Add.UIStroke
+	G2L["1e"] = Instance.new("UIStroke", G2L["1b"]);
+	G2L["1e"]["Color"] = Color3.fromRGB(33, 44, 57);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Editor.Frame
+	G2L["1f"] = Instance.new("Frame", G2L["12"]);
+	G2L["1f"]["BorderSizePixel"] = 0;
+	G2L["1f"]["BackgroundColor3"] = Color3.fromRGB(33, 44, 57);
+	G2L["1f"]["Size"] = UDim2.new(1, 10, 0, 1);
+	G2L["1f"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["1f"]["Position"] = UDim2.new(0, -10, 0, 38);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Scripts
+	G2L["20"] = Instance.new("Frame", G2L["11"]);
+	G2L["20"]["BorderSizePixel"] = 0;
+	G2L["20"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["20"]["BackgroundTransparency"] = 1;
+	G2L["20"]["Size"] = UDim2.new(0, 145, 1, 0);
+	G2L["20"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["20"]["Name"] = [[Scripts]];
+
+	-- StarterGui.SystemHook.UI.Display.Content.Scripts.Content
+	G2L["21"] = Instance.new("ScrollingFrame", G2L["20"]);
+	G2L["21"]["Active"] = true;
+	G2L["21"]["ScrollingDirection"] = Enum.ScrollingDirection.Y;
+	G2L["21"]["BorderSizePixel"] = 0;
+	G2L["21"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
+	G2L["21"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["21"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
+	G2L["21"]["BackgroundTransparency"] = 1;
+	G2L["21"]["Size"] = UDim2.new(1, 0, 1, -30);
+	G2L["21"]["ScrollBarImageColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["21"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["21"]["ScrollBarThickness"] = 1;
+	G2L["21"]["Position"] = UDim2.new(0, 0, 0, 30);
+	G2L["21"]["Name"] = [[Content]];
+
+	-- StarterGui.SystemHook.UI.Display.Content.Scripts.Content.UIListLayout
+	G2L["22"] = Instance.new("UIListLayout", G2L["21"]);
+	G2L["22"]["HorizontalAlignment"] = Enum.HorizontalAlignment.Center;
+	G2L["22"]["Padding"] = UDim.new(0, 5);
+	G2L["22"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+
+	-- StarterGui.SystemHook.UI.Display.Content.Scripts.Content.UIPadding
+	G2L["23"] = Instance.new("UIPadding", G2L["21"]);
+	G2L["23"]["PaddingTop"] = UDim.new(0, 1);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Scripts.Header
+	G2L["24"] = Instance.new("TextLabel", G2L["20"]);
+	G2L["24"]["BorderSizePixel"] = 0;
+	G2L["24"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["24"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+	G2L["24"]["FontFace"] = Font.new([[rbxasset://fonts/families/GothamSSm.json]], Enum.FontWeight.SemiBold, Enum.FontStyle.Normal);
+	G2L["24"]["TextSize"] = 14;
+	G2L["24"]["TextColor3"] = Color3.fromRGB(36, 49, 63);
+	G2L["24"]["Size"] = UDim2.new(1, 0, 0, 30);
+	G2L["24"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["24"]["Text"] = [[Scripts]];
+	G2L["24"]["Name"] = [[Header]];
+	G2L["24"]["BackgroundTransparency"] = 1;
+
+	-- StarterGui.SystemHook.UI.Display.Content.Scripts.Header.UIPadding
+	G2L["25"] = Instance.new("UIPadding", G2L["24"]);
+	G2L["25"]["PaddingBottom"] = UDim.new(0, 1);
+	G2L["25"]["PaddingLeft"] = UDim.new(0, 14);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Scripts.Frame
+	G2L["26"] = Instance.new("Frame", G2L["20"]);
+	G2L["26"]["BorderSizePixel"] = 0;
+	G2L["26"]["BackgroundColor3"] = Color3.fromRGB(33, 44, 57);
+	G2L["26"]["Size"] = UDim2.new(0, 1, 1, 0);
+	G2L["26"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["26"]["Position"] = UDim2.new(1, -1, 0, 0);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Controls
+	G2L["27"] = Instance.new("Frame", G2L["11"]);
+	G2L["27"]["BorderSizePixel"] = 0;
+	G2L["27"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["27"]["BackgroundTransparency"] = 1;
+	G2L["27"]["Size"] = UDim2.new(1, -145, 1, -246);
+	G2L["27"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["27"]["Position"] = UDim2.new(0, 145, 1, -40);
+	G2L["27"]["Name"] = [[Controls]];
+
+	-- StarterGui.SystemHook.UI.Display.Content.Controls.Controls
+	G2L["28"] = Instance.new("Frame", G2L["27"]);
+	G2L["28"]["BorderSizePixel"] = 0;
+	G2L["28"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["28"]["BackgroundTransparency"] = 1;
+	G2L["28"]["Size"] = UDim2.new(1, 0, 1, 0);
+	G2L["28"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["28"]["Name"] = [[Controls]];
+
+	-- StarterGui.SystemHook.UI.Display.Content.Controls.Controls.UIPadding
+	G2L["29"] = Instance.new("UIPadding", G2L["28"]);
+	G2L["29"]["PaddingRight"] = UDim.new(0, 8);
+	G2L["29"]["PaddingLeft"] = UDim.new(0, 12);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Controls.Controls.Execute
+	G2L["2a"] = Instance.new("ImageButton", G2L["28"]);
+	G2L["2a"]["BorderSizePixel"] = 0;
+	G2L["2a"]["AutoButtonColor"] = false;
+	G2L["2a"]["BackgroundColor3"] = Color3.fromRGB(21, 28, 36);
+	G2L["2a"]["LayoutOrder"] = 2;
+	G2L["2a"]["Size"] = UDim2.new(0, 33, 0, 33);
+	G2L["2a"]["Name"] = [[Execute]];
+	G2L["2a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Controls.Controls.Execute.UICorner
+	G2L["2b"] = Instance.new("UICorner", G2L["2a"]);
+	G2L["2b"]["CornerRadius"] = UDim.new(0, 7);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Controls.Controls.Execute.Icon
+	G2L["2c"] = Instance.new("ImageLabel", G2L["2a"]);
+	G2L["2c"]["BorderSizePixel"] = 0;
+	G2L["2c"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["2c"]["ImageTransparency"] = 0.4000000059604645;
+	G2L["2c"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
+	G2L["2c"]["Image"] = [[rbxassetid://17746511317]];
+	G2L["2c"]["Size"] = UDim2.new(0.5, 0, 0.5, 0);
+	G2L["2c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["2c"]["Name"] = [[Icon]];
+	G2L["2c"]["BackgroundTransparency"] = 1;
+	G2L["2c"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Controls.Controls.Execute.UIStroke
+	G2L["2d"] = Instance.new("UIStroke", G2L["2a"]);
+	G2L["2d"]["Color"] = Color3.fromRGB(33, 44, 57);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Controls.Controls.UIListLayout
+	G2L["2e"] = Instance.new("UIListLayout", G2L["28"]);
+	G2L["2e"]["FillDirection"] = Enum.FillDirection.Horizontal;
+	G2L["2e"]["HorizontalAlignment"] = Enum.HorizontalAlignment.Right;
+	G2L["2e"]["Padding"] = UDim.new(0, 9);
+	G2L["2e"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+
+	-- StarterGui.SystemHook.UI.Display.Content.Controls.Controls.Clear
+	G2L["2f"] = Instance.new("ImageButton", G2L["28"]);
+	G2L["2f"]["BorderSizePixel"] = 0;
+	G2L["2f"]["AutoButtonColor"] = false;
+	G2L["2f"]["BackgroundColor3"] = Color3.fromRGB(21, 28, 36);
+	G2L["2f"]["LayoutOrder"] = 1;
+	G2L["2f"]["Size"] = UDim2.new(0, 33, 0, 33);
+	G2L["2f"]["Name"] = [[Clear]];
+	G2L["2f"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Controls.Controls.Clear.UICorner
+	G2L["30"] = Instance.new("UICorner", G2L["2f"]);
+	G2L["30"]["CornerRadius"] = UDim.new(0, 7);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Controls.Controls.Clear.Icon
+	G2L["31"] = Instance.new("ImageLabel", G2L["2f"]);
+	G2L["31"]["BorderSizePixel"] = 0;
+	G2L["31"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+	G2L["31"]["ImageTransparency"] = 0.4000000059604645;
+	G2L["31"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
+	G2L["31"]["Image"] = [[rbxassetid://17746544452]];
+	G2L["31"]["Size"] = UDim2.new(0.5, 0, 0.5, 0);
+	G2L["31"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["31"]["Name"] = [[Icon]];
+	G2L["31"]["BackgroundTransparency"] = 1;
+	G2L["31"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Controls.Controls.Clear.UIStroke
+	G2L["32"] = Instance.new("UIStroke", G2L["2f"]);
+	G2L["32"]["Color"] = Color3.fromRGB(33, 44, 57);
+
+	-- StarterGui.SystemHook.UI.Display.Content.Controls.Frame
+	G2L["33"] = Instance.new("Frame", G2L["27"]);
+	G2L["33"]["BorderSizePixel"] = 0;
+	G2L["33"]["BackgroundColor3"] = Color3.fromRGB(33, 44, 57);
+	G2L["33"]["Size"] = UDim2.new(1, 0, 0, 1);
+	G2L["33"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["33"]["Position"] = UDim2.new(0, 0, 0, -8);
+
+	-- StarterGui.SystemHook.UI.Display.UIPadding
+	G2L["34"] = Instance.new("UIPadding", G2L["10"]);
+	G2L["34"]["PaddingTop"] = UDim.new(0, 33);
+
+	-- StarterGui.SystemHook.UI.UIStroke
+	G2L["35"] = Instance.new("UIStroke", G2L["2"]);
+	G2L["35"]["Color"] = Color3.fromRGB(33, 44, 57);
+
+	-- StarterGui.SystemHook.UI.Resize
+	G2L["36"] = Instance.new("ImageButton", G2L["2"]);
+	G2L["36"]["BorderSizePixel"] = 0;
+	G2L["36"]["BackgroundColor3"] = Color3.fromRGB(23, 31, 40);
+	G2L["36"]["Size"] = UDim2.new(0, 25, 0, 25);
+	G2L["36"]["Name"] = [[Resize]];
+	G2L["36"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+	G2L["36"]["Position"] = UDim2.new(1, 0, 1, 0);
+	G2L["36"]["BackgroundTransparency"] = 1;
+
+	-- StarterGui.SystemHook.UI.Resize.UICorner
+	G2L["37"] = Instance.new("UICorner", G2L["36"]);
+	G2L["37"]["CornerRadius"] = UDim.new(0, 5);
+
+	return G2L["1"]
+end
+
+spawn(function()
+	local ui = initui().UI
+	
+	local function Scripts()
+		
+		local content = ui.Display.Content
+		local scriptsframe = content.Scripts.Content
+		local scripts = {}
+
+		function scripts:AddScript(config)
+			local scriptt = {
+				["Script"] = Instance.new("Frame"),
+				["UICorner"] = Instance.new("UICorner"),
+				["Image"] = Instance.new("ImageLabel"),
+				["UICorner_2"] = Instance.new("UICorner"),
+				["Bottom"] = Instance.new("Frame"),
+				["UIStroke"] = Instance.new("UIStroke"),
+				["UICorner_3"] = Instance.new("UICorner"),
+				["Cover"] = Instance.new("Frame"),
+				["Header"] = Instance.new("TextLabel"),
+				["UIPadding"] = Instance.new("UIPadding"),
+				["Run"] = Instance.new("ImageButton"),
+				["Icon"] = Instance.new("ImageLabel"),
+				["UICorner_4"] = Instance.new("UICorner")
+			}
+
+			scriptt.Script.Name = config.ScriptTitle
+			scriptt.Script.Parent = scriptsframe
+			scriptt.Script.BackgroundColor3 = Color3.fromRGB(20, 27, 35)
+			scriptt.Script.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			scriptt.Script.BorderSizePixel = 0
+			scriptt.Script.Position = UDim2.new(0.0793103427, 0, 0, 0)
+			scriptt.Script.Size = UDim2.new(0, 122, 0, 88)
+
+			scriptt.UIStroke.Color = Color3.fromRGB(32, 43, 56)
+			scriptt.UIStroke.Parent = scriptt.Script
+
+			scriptt.UICorner.CornerRadius = UDim.new(0, 6)
+			scriptt.UICorner.Parent = scriptt.Script
+
+			scriptt.Image.Name = "Image"
+			scriptt.Image.Parent = scriptt.Script
+			scriptt.Image.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			scriptt.Image.BackgroundTransparency = 1.000
+			scriptt.Image.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			scriptt.Image.BorderSizePixel = 0
+			scriptt.Image.Size = UDim2.new(1, 0, 0.738636374, 0)
+			scriptt.Image.Image = "rbxassetid://"..config.ScriptImage
+
+			scriptt.UICorner_2.CornerRadius = UDim.new(0, 6)
+			scriptt.UICorner_2.Parent = scriptt.Image
+
+			scriptt.Bottom.Name = "Bottom"
+			scriptt.Bottom.Parent = scriptt.Script
+			scriptt.Bottom.BackgroundColor3 = Color3.fromRGB(14, 19, 25)
+			scriptt.Bottom.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			scriptt.Bottom.BorderSizePixel = 0
+			scriptt.Bottom.Position = UDim2.new(0, 0, 1, -26)
+			scriptt.Bottom.Size = UDim2.new(1, 0, 0, 26)
+
+			scriptt.UICorner_3.CornerRadius = UDim.new(0, 6)
+			scriptt.UICorner_3.Parent = scriptt.Bottom
+
+			scriptt.Cover.Name = "Cover"
+			scriptt.Cover.Parent = scriptt.Bottom
+			scriptt.Cover.BackgroundColor3 = Color3.fromRGB(14, 19, 25)
+			scriptt.Cover.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			scriptt.Cover.BorderSizePixel = 0
+			scriptt.Cover.Size = UDim2.new(1, 0, 0, 7)
+
+			scriptt.Header.Name = "Header"
+			scriptt.Header.Parent = scriptt.Bottom
+			scriptt.Header.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			scriptt.Header.BackgroundTransparency = 1.000
+			scriptt.Header.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			scriptt.Header.BorderSizePixel = 0
+			scriptt.Header.Size = UDim2.new(0.77868855, 0, 1, 0)
+			scriptt.Header.Font = Enum.Font.GothamMedium
+			scriptt.Header.Text = config.ScriptTitle
+			scriptt.Header.TextColor3 = Color3.fromRGB(185, 185, 185)
+			scriptt.Header.TextSize = 12.000
+			scriptt.Header.TextXAlignment = Enum.TextXAlignment.Left
+
+			scriptt.UIPadding.Parent = scriptt.Header
+			scriptt.UIPadding.PaddingBottom = UDim.new(0, 1)
+			scriptt.UIPadding.PaddingLeft = UDim.new(0, 8)
+
+			scriptt.Run.Name = "Run"
+			scriptt.Run.Parent = scriptt.Bottom
+			scriptt.Run.AnchorPoint = Vector2.new(0, 0.5)
+			scriptt.Run.BackgroundColor3 = Color3.fromRGB(51, 70, 90)
+			scriptt.Run.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			scriptt.Run.BorderSizePixel = 0
+			scriptt.Run.Position = UDim2.new(1, -23, 0.5, 0)
+			scriptt.Run.Size = UDim2.new(0, 20, 0, 20)
+			scriptt.Run.AutoButtonColor = false
+
+			scriptt.Icon.Name = "Icon"
+			scriptt.Icon.Parent = scriptt.Run
+			scriptt.Icon.AnchorPoint = Vector2.new(0.5, 0.5)
+			scriptt.Icon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			scriptt.Icon.BackgroundTransparency = 1.000
+			scriptt.Icon.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			scriptt.Icon.BorderSizePixel = 0
+			scriptt.Icon.Position = UDim2.new(0.5, 0, 0.5, 0)
+			scriptt.Icon.Size = UDim2.new(0.5, 0, 0.5, 0)
+			scriptt.Icon.Image = "rbxassetid://17746511317"
+			scriptt.Icon.ImageTransparency = 0.400
+
+			scriptt.UICorner_4.CornerRadius = UDim.new(0, 6)
+			scriptt.UICorner_4.Parent = scriptt.Run
+
+			scriptt.Run.MouseEnter:Connect(function()
+				ts:Create(scriptt.Run,tweeninfo,{BackgroundColor3 = Color3.fromRGB(58, 81, 103)}):Play()
+				ts:Create(scriptt.Icon,tweeninfo,{ImageTransparency = 0}):Play()
+			end)
+			scriptt.Run.MouseLeave:Connect(function()
+				ts:Create(scriptt.Run,tweeninfo,{BackgroundColor3 = Color3.fromRGB(51, 70, 90)}):Play()
+				ts:Create(scriptt.Icon,tweeninfo,{ImageTransparency = 0.4}):Play()
+			end)
+
+			scriptt.Run.MouseButton1Click:Connect(function()
+				pcall(function()
+					assert(loadstring(config.ScriptSource))()
+				end)
+			end)
+		end
+
+		return scripts
+	end
+	
+	local function TabSystem()
+		
+		local content = ui.Display.Content
+		local tabsframe = content.Editor.TabsFrame
+		local editor = content.Editor.EditorFrame
+
+		local tabs = {
+			["tabs"] = {} 
+		}
+
+		local selected = nil
+
+		function tabs:GetTabs()
+			local a = 0
+			for i,v in pairs(tabs.tabs) do
+				a+=1
+			end
+			return a
+		end
+
+		local function Switch(tab)
+			editor.Source.Text = tabs.tabs[tab.Name].source
+			selected = tab
+			for i,v in pairs(tabsframe:GetChildren()) do
+				if v:IsA("ImageButton") and v.Name ~= "Add" then
+					if v == selected then
+						ts:Create(v, tweeninfo, {BackgroundColor3 = Color3.fromRGB(20, 27, 35)}):Play()
+					else
+						ts:Create(v, tweeninfo, {BackgroundColor3 = Color3.fromRGB(12, 16, 21)}):Play()
+					end
+				end
+			end
+		end
+
+		local function Remove(tab)
+			for i,v in ipairs(tabs.tabs) do
+				if v.title == tab.Name then
+					table.remove(tabs.tabs, i)
+				end
+			end
+			if selected == tab then
+				local nexttab = nil
+				for i,v in pairs(tabsframe:GetChildren()) do
+					if v:IsA("ImageButton") and v.Name ~= "Add" then
+						if v.LayoutOrder > tab.LayoutOrder then
+							v.LayoutOrder -= 1
+						end
+						if nexttab == nil then
+							nexttab = v
+						end
+					end
+				end
+				if nexttab == nil then
+					editor.Source.Text = ""
+					selected = nil
+				else
+					Switch(nexttab)
+				end
+			end
+			tab:Destroy()
+		end
+
+		function tabs:AddTab(title, source)
+			
+			local tab = {
+				["TabFrame"] = Instance.new("ImageButton"),
+				["Header"] = Instance.new("TextLabel"),
+				["UIPadding"] = Instance.new("UIPadding"),
+				["UIStroke"] = Instance.new("UIStroke"),
+				["UICorner"] = Instance.new("UICorner"),
+				["Close"] = Instance.new("ImageButton"),
+				["UICorner_2"] = Instance.new("UICorner"),
+				["Icon"] = Instance.new("ImageLabel")
+			}
+			tabs.tabs[title] = {
+				title = title,
+				source = source,
+				tab = tab.TabFrame
+			}
+
+			tab.TabFrame.Name = title
+			tab.TabFrame.Parent = tabsframe
+			tab.TabFrame.BackgroundColor3 = Color3.fromRGB(17, 22, 29)
+			tab.TabFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			tab.TabFrame.BorderSizePixel = 0
+			tab.TabFrame.LayoutOrder = tabs:GetTabs()+1
+			tab.TabFrame.Size = UDim2.new(0, 0, 0, 30)
+			tab.TabFrame.AutomaticSize = Enum.AutomaticSize.X
+			tab.TabFrame.AutoButtonColor = false
+
+			tab.Header.Name = "Header"
+			tab.Header.Parent = tab.TabFrame
+			tab.Header.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			tab.Header.BackgroundTransparency = 1.000
+			tab.Header.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			tab.Header.BorderSizePixel = 0
+			tab.Header.Size = UDim2.new(0, 0, 1, 0)
+			tab.Header.Font = Enum.Font.GothamMedium
+			tab.Header.Text = title
+			tab.Header.TextColor3 = Color3.fromRGB(255, 255, 255)
+			tab.Header.TextSize = 13.000
+			tab.Header.AutomaticSize = Enum.AutomaticSize.X
+			tab.Header.TextXAlignment = Enum.TextXAlignment.Left
+
+			tab.UIPadding.Parent = tab.Header
+			tab.UIPadding.PaddingBottom = UDim.new(0, 1)
+			tab.UIPadding.PaddingLeft = UDim.new(0, 8)
+			tab.UIPadding.PaddingRight = UDim.new(0, 11)
+
+			tab.UIStroke.Color = Color3.fromRGB(32, 43, 56)
+			tab.UIStroke.Parent = tab.TabFrame
+
+			tab.UICorner.CornerRadius = UDim.new(0, 5)
+			tab.UICorner.Parent = tab.TabFrame
+
+			tab.Close.Name = "Close"
+			tab.Close.Parent = tab.TabFrame
+			tab.Close.AnchorPoint = Vector2.new(0, 0.5)
+			tab.Close.BackgroundColor3 = Color3.fromRGB(20, 27, 35)
+			tab.Close.BackgroundTransparency = 1.000
+			tab.Close.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			tab.Close.BorderSizePixel = 0
+			tab.Close.Position = UDim2.new(1, -25, 0.5, 0)
+			tab.Close.Size = UDim2.new(0, 20, 0, 20)
+			tab.Close.AutoButtonColor = false
+
+			tab.UICorner_2.CornerRadius = UDim.new(0, 5)
+			tab.UICorner_2.Parent = tab.Close
+
+			tab.Icon.Name = "Icon"
+			tab.Icon.Parent = tab.Close
+			tab.Icon.AnchorPoint = Vector2.new(0.5, 0.5)
+			tab.Icon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			tab.Icon.BackgroundTransparency = 1.000
+			tab.Icon.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			tab.Icon.BorderSizePixel = 0
+			tab.Icon.Position = UDim2.new(0.5, 0, 0.5, 0)
+			tab.Icon.Size = UDim2.new(0.800000012, 0, 0.800000012, 0)
+			tab.Icon.Image = "rbxassetid://7072725342"
+			tab.Icon.ImageTransparency = 1.000
+
+			tab.TabFrame.MouseEnter:Connect(function()
+				ts:Create(tab.UIPadding, tweeninfo, {PaddingRight=UDim.new(0, 31)}):Play()
+				ts:Create(tab.Icon, tweeninfo, {ImageTransparency=0.4}):Play()
+				ts:Create(tab.Close, tweeninfo, {BackgroundTransparency=0}):Play()
+			end)
+			tab.TabFrame.MouseLeave:Connect(function()
+				ts:Create(tab.UIPadding, tweeninfo, {PaddingRight=UDim.new(0, 11)}):Play()
+				ts:Create(tab.Close.Icon, tweeninfo, {ImageTransparency=1}):Play()
+				ts:Create(tab.Close, tweeninfo, {BackgroundTransparency=1}):Play()
+			end)
+
+			tab.Close.MouseEnter:Connect(function()
+				ts:Create(tab.Icon, tweeninfo, {ImageTransparency=0}):Play()
+				ts:Create(tab.Close, tweeninfo, {BackgroundColor3=Color3.fromRGB(28, 37, 49)}):Play()
+			end)
+			tab.Close.MouseLeave:Connect(function()
+				ts:Create(tab.Icon, tweeninfo, {ImageTransparency=0.4}):Play()
+				ts:Create(tab.Close, tweeninfo, {BackgroundColor3=Color3.fromRGB(20, 27, 35)}):Play()
+			end)
+			tab.Close.MouseButton1Click:Connect(function()
+				Remove(tab.TabFrame)
+			end)
+			tab.TabFrame.MouseButton1Click:Connect(function()
+				Switch(tab.TabFrame)
+			end)
+			editor.Source.Changed:Connect(function()
+				if selected == tab.TabFrame then
+					tabs.tabs[title].source = editor.Source.Text
+				end
+			end)
+
+			Switch(tab.TabFrame)
+		end
+
+		return tabs
+	end
+	
+	pcall(function() -- Drag
+		local UserInputService = game:GetService("UserInputService")
+
+		local gui = ui.Top
+
+		local dragging
+		local dragInput
+		local dragStart
+		local startPos
+
+		local function update(input)
+			local delta = input.Position - dragStart
+			ui.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		end
+
+		gui.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				dragging = true
+				dragStart = input.Position
+				startPos = ui.Position
+
+				input.Changed:Connect(function()
+					if input.UserInputState == Enum.UserInputState.End then
+						dragging = false
+					end
+				end)
 			end
 		end)
-	end
-end
 
-local function onDragMove(input)
-	if dragging then
-		local delta = input.Position - startPos
-		frame.Position = UDim2.new(startPosFrame.X.Scale, startPosFrame.X.Offset + delta.X, startPosFrame.Y.Scale, startPosFrame.Y.Offset + delta.Y)
-	end
-end
+		gui.InputChanged:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+				dragInput = input
+			end
+		end)
 
-titleBar.InputBegan:Connect(onDragStart)
-UserInputService.InputChanged:Connect(onDragMove)
-
--- Functionality
-local function executeCode()
-	local code = codeEditor.Text
-	-- Use pcall to safely attempt code execution
-	local success, result = pcall(function()
-		-- Use `assert` to run code and catch errors
-		local func = assert(loadstring(code), "Error loading script")
-		func()
+		UserInputService.InputChanged:Connect(function(input)
+			if input == dragInput and dragging then
+				update(input)
+			end
+		end)
 	end)
-	if not success then
-		warn("Error executing code: " .. result)
-	end
-end
+	
+	pcall(function() -- Editor
+		local content = ui.Display.Content
+		local editor = content.Editor.EditorFrame
 
-executeButton.MouseButton1Click:Connect(executeCode)
+		local src = editor.Source
+		local lines = editor.Lines
 
-clearButton.MouseButton1Click:Connect(function()
-	codeEditor.Text = ""
-end)
+		local chars = 0
 
--- Fade In/Out functionality
-local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-local fadeInTween = TweenService:Create(frame, tweenInfo, {BackgroundTransparency = 0})
-local fadeOutTween = TweenService:Create(frame, tweenInfo, {BackgroundTransparency = 1})
+		local function getlines(s)
+			local a = ""
+			for i=1,select(2,src.Text:gsub('\n', '\n'))+1 do
+				a=a..i.."\n"
+			end
+			if s == "string" then
+				return a
+			elseif s == "number" then
+				return tonumber(a)
+			end
+            return nil
+		end
 
-local titleFadeInTween = TweenService:Create(titleLabel, tweenInfo, {TextTransparency = 0})
-local titleFadeOutTween = TweenService:Create(titleLabel, tweenInfo, {TextTransparency = 1})
+		local lines_counter = function(type)
+			if type == "Text" then
+				lines.Text=getlines("string")
+			end
+		end
 
-local codeEditorFadeInTween = TweenService:Create(codeEditor, tweenInfo, {TextTransparency = 0})
-local codeEditorFadeOutTween = TweenService:Create(codeEditor, tweenInfo, {TextTransparency = 1})
+		local auto_position = function(type)
+			if type == "Text" then
+				local chars2 = #src.Text
+				if chars > chars2 then
+					editor.CanvasPosition=editor.CanvasPosition+Vector2.new(-3,0)
+				elseif chars < chars2 then
+					editor.CanvasPosition=editor.CanvasPosition+Vector2.new(9,0)
+				end
+			end
+		end
 
-local isVisible = false
-local function toggleFade()
-	if isVisible then
-		fadeOutTween:Play()
-		titleFadeOutTween:Play()
-		codeEditorFadeOutTween:Play()
-		wait(tweenInfo.Time)
-		frame.Visible = false
-	else
-		frame.Visible = true
-		fadeInTween:Play()
-		titleFadeInTween:Play()
-		codeEditorFadeInTween:Play()
-	end
-	isVisible = not isVisible
-end
+		src.Changed:Connect(lines_counter)
+		src.Changed:Connect(auto_position)
+	end)
+	
+	pcall(function() -- Resize
+		local rs = game:GetService("RunService")
+		local uis = game:GetService("UserInputService")
+		local mouse = game:GetService("Players").LocalPlayer:GetMouse()
+		local drag
 
-UserInputService.InputBegan:Connect(function(input, processed)
-	if processed then return end
-	if input.KeyCode == Enum.KeyCode.Insert then
-		toggleFade()
-	end
+		local resize = ui.Resize
+
+		resize.MouseEnter:Connect(function()
+			resize.Transparency = 0.5
+		end)
+		resize.MouseLeave:Connect(function()
+			resize.Transparency = 1
+		end)
+		resize.MouseButton1Down:Connect(function()
+			drag = rs.Stepped:Connect(function()
+				local newWidth = mouse.X
+				local newHeight = mouse.Y
+				if newWidth < 570 then
+					newWidth = 570
+				end
+				if newHeight < 319 then
+					newHeight = 319
+				end
+				ui.Size = UDim2.new(0, newWidth, 0, newHeight)
+			end)
+			local a
+			a = uis.InputEnded:Connect(function(key)
+				if key.UserInputType == Enum.UserInputType.MouseButton1 then
+					if drag then
+						drag:Disconnect()
+						a:Disconnect()
+					end
+				end
+			end)
+		end)
+	end)
+	
+	pcall(function() -- Tabs
+		local content = ui.Display.Content
+		local tabsfrane = content.Editor.TabsFrame
+		local tabs = TabSystem()
+
+		tabsfrane.Add.MouseButton1Click:Connect(function()
+			tabs:AddTab("Untitled-"..tabs:GetTabs()+1, "--[[\n    SystemHook By:\n       Dev(hitbydev) - MainDev\n       Skire (.x6x6) - UI Dev\n]]\nprint(\"SystemHook\")")
+		end)
+	end)
+	
+	pcall(function() -- add_Button
+		
+		local content = ui.Display.Content
+		local tabsframe = content.Editor.TabsFrame
+
+		local add = tabsframe.Add
+		
+
+		add.MouseEnter:Connect(function()
+			ts:Create(add,tweeninfo,{BackgroundColor3 = Color3.fromRGB(25, 34, 43)}):Play()
+			ts:Create(add.Icon,tweeninfo,{ImageTransparency = 0}):Play()
+		end)
+		add.MouseLeave:Connect(function()
+			ts:Create(add,tweeninfo,{BackgroundColor3 = Color3.fromRGB(20, 27, 35)}):Play()
+			ts:Create(add.Icon,tweeninfo,{ImageTransparency = 0.4}):Play()
+		end)
+	end)
+	
+	pcall(function() -- control_Buttons
+		
+		local content = ui.Display.Content
+		local controlsframe = content.Controls
+		local editorframe = content.Editor
+
+		local src = editorframe.EditorFrame.Source
+		
+
+		controlsframe.Controls.Execute.MouseButton1Click:Connect(function()
+			pcall(function()
+				assert(loadstring(src.Text))()
+			end)
+		end)
+
+		controlsframe.Controls.Clear.MouseButton1Click:Connect(function()
+			src.Text = ""
+		end)
+
+		for i,v in pairs(controlsframe.Controls:GetChildren()) do
+			if v:IsA("ImageButton") then
+				v.MouseEnter:Connect(function()
+					ts:Create(v,tweeninfo,{BackgroundColor3 = Color3.fromRGB(28, 39, 49)}):Play()
+					ts:Create(v.Icon,tweeninfo,{ImageTransparency = 0}):Play()
+				end)
+				v.MouseLeave:Connect(function()
+					ts:Create(v,tweeninfo,{BackgroundColor3 = Color3.fromRGB(20, 27, 35)}):Play()
+					ts:Create(v.Icon,tweeninfo,{ImageTransparency = 0.4}):Play()
+				end)
+			end
+		end
+	end)
+	
+	pcall(function() -- top_Buttons
+		local top = ui.Top
+		top.Hide.MouseEnter:Connect(function()
+			top.Hide.Icon.ImageTransparency = 0
+		end)
+		top.Hide.MouseLeave:Connect(function()
+			top.Hide.Icon.ImageTransparency = 0.4
+		end)
+		top.Minimize.MouseEnter:Connect(function()
+			top.Minimize.Icon.ImageTransparency = 0
+		end)
+		top.Minimize.MouseLeave:Connect(function()
+			top.Minimize.Icon.ImageTransparency = 0.4
+		end)
+
+        top.Minimize.MouseButton1Click:Connect(function()
+			ui.Visible = false
+		end)
+        top.Minimize.MouseLeave:Connect(function()
+			ui.Parent:Destroy()
+		end)
+	end)
+	
+    pcall(function() -- toggle
+        local function a(input, gameProcessedEvent)
+            if input.KeyCode == Enum.KeyCode.Insert then
+                ui.Visible = not ui.Visible
+            end
+        end
+        uis.InputBegan:Connect(a)
+    end)
+
+	pcall(function()
+		local scripts = Scripts()
+		local tabs = TabSystem()
+		tabs:AddTab("Untitled-"..tabs:GetTabs()+1, "--[[\n    SystemHook By:\n       Timeh (timeh.exe) - MainDev\n       Skire (.x6x6) - UI Dev\n]]\nprint(\"SystemHook BETA\")")
+		scripts:AddScript({
+			ScriptTitle = "Infinite Yield",
+			ScriptImage = "16714857078",
+			ScriptSource = "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source\"))()"
+		})
+	end)
 end)
