@@ -1005,7 +1005,7 @@ spawn(function()
 	pcall(function()
 		local scripts = Scripts()
 		local tabs = TabSystem()
-		tabs:AddTab("Untitled-"..tabs:GetTabs()+1, "--[[\n    SystemHook By:\n       Timeh (timeh.exe) - MainDev\n       Skire (.x6x6) - UI Dev\n]]\nprint(\"SystemHook BETA\")")
+		tabs:AddTab("Untitled-"..tabs:GetTabs()+1, "--[[\n    SystemHook By:\n       Dev (hitbydev) - Solo Developer]]\nprint(\"SystemHook BETA\")")
 		scripts:AddScript({
 			ScriptTitle = "Infinite Yield",
 			ScriptImage = "16714857078",
