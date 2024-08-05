@@ -12,7 +12,7 @@ getgenv().getexecutorname = function()
     return "SystemHook"
 end
 
-getgenv().identity = function()
+getgenv().identify = function()
     return "SystemHook"
 end
 
