@@ -8,29 +8,21 @@ local CONFIG = {
     StrafeSpeed = 10,
     CircleColor = Color3.fromRGB(255, 255, 255),
     CircleRadius = 0,
-    AimbotSmoothness = 0,
+    AimbotSmoothness = 0, 
     HeadshotPredictionTime = 0.1,
     AimbotFOV = 90,
-    StrafeRandomRange = 60,
+    StrafeRandomRange = 60, 
 }
 
-local settings = {
-    defaultColor = Color3.fromRGB(255, 0, 0), -- Default ESP color (red)
-    teamCheck = false, -- Whether to hide ESP for teammates
-    teamColor = true, -- Whether to use team colors for ESP
-    healthBarEnabled = true, -- Whether to display health bars
-    healthBarWidth = 4, -- Width of the health bar
-    healthBarOffset = 2 -- Offset from the left side of the ESP box
-}
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Chat = game:GetService("Chat")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 
--- Services
-local players = game:GetService("Players")
-local runService = game:GetService("RunService")
-local camera = workspace.CurrentCamera
-local localPlayer = players.LocalPlayer
-
--- Variables
-local espCache = {}
 local targetPlayer = nil
 local aiming = false
 local strafeEnabled = CONFIG.TargetStrafe
@@ -40,102 +32,59 @@ local circleIndicators = {}
 local currentStrafeSpeed = CONFIG.StrafeSpeed
 local directionChangeInterval = 0.143 -- Interval for changing direction
 local lastDirectionChange = tick()
-local newVector2 = Vector2.new
-local newDrawing = Drawing.new
-local round = math.round
-local tan = math.tan
-local rad = math.rad
 
--- Functions
-local wtvp = function(...) local a, b = camera:WorldToViewportPoint(...) return newVector2(a.X, a.Y), b, a.Z end
-
--- Create ESP box and health bar for a player
-local function createEsp(player)
-    local esp = {}
-
-    -- Round ESP Box
-    esp.box = newDrawing("Circle")
-    esp.box.Thickness = 2
-    esp.box.Filled = false
-    esp.box.Color = settings.defaultColor
-    esp.box.Visible = false
-    esp.box.ZIndex = 2
-
-    -- Round Health Bar
-    if settings.healthBarEnabled then
-        esp.healthBar = newDrawing("Circle")
-        esp.healthBar.Thickness = settings.healthBarWidth
-        esp.healthBar.Color = Color3.fromRGB(0, 255, 0) -- Green color
-        esp.healthBar.Visible = false
-        esp.healthBar.ZIndex = 2
+local function updateHighlight(character, color)
+    local highlight = highlights[character] or character:FindFirstChild("Highlight")
+    if not highlight then
+        highlight = Instance.new("Highlight")
+        highlight.Name = "Highlight"
+        highlight.Adornee = character
+        highlight.Parent = character
+        highlights[character] = highlight
     end
-
-    espCache[player] = esp
+    highlight.FillColor = color
+    highlight.FillTransparency = 0.5
+    highlight.OutlineColor = color
+    highlight.OutlineTransparency = 0.3
 end
 
--- Remove ESP box and health bar for a player
-local function removeEsp(player)
-    if espCache[player] then
-        for _, drawing in pairs(espCache[player]) do
-            drawing:Remove()
-        end
-        espCache[player] = nil
+local function removeHighlight(character)
+    local highlight = highlights[character]
+    if highlight then
+        highlight:Destroy()
+        highlights[character] = nil
     end
 end
 
--- Update ESP box and health bar for a player
-local function updateEsp(player, esp)
-    local character = player.Character
-    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-
-    if character and humanoid then
-        local cframe = character:GetModelCFrame()
-        local position, visible, depth = wtvp(cframe.Position)
-
-        if visible then
-            local scaleFactor = 1 / (depth * tan(rad(camera.FieldOfView / 2)) * 2) * 1000
-            local radius = round(2 * scaleFactor)
-            local x, y = round(position.X, position.Y)
-
-            -- Update ESP Box
-            esp.box.Radius = radius
-            esp.box.Position = newVector2(x, y)
-            esp.box.Color = settings.teamColor and player.TeamColor.Color or settings.defaultColor
-            esp.box.Visible = true
-
-            -- Update Health Bar
-            if settings.healthBarEnabled then
-                local healthPercent = humanoid.Health / humanoid.MaxHealth
-                local barRadius = radius * healthPercent
-                esp.healthBar.Radius = round(barRadius)
-                esp.healthBar.Position = newVector2(x - radius - settings.healthBarOffset, y)
-                esp.healthBar.Color = Color3.fromRGB(255 - round(255 * healthPercent), round(255 * healthPercent), 0) -- Red to Green gradient
-                esp.healthBar.Visible = true
-            end
-        else
-            esp.box.Visible = false
-            if settings.healthBarEnabled then
-                esp.healthBar.Visible = false
+local function updatePlayerESP(player)
+    if CONFIG.ESPEnabled then
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local humanoidRootPart = player.Character.HumanoidRootPart
+            local screenPosition, onScreen = Camera:WorldToViewportPoint(humanoidRootPart.Position)
+            if onScreen then
+                if player == targetPlayer then
+                    updateHighlight(player.Character, CONFIG.TargetColor)
+                else
+                    updateHighlight(player.Character, CONFIG.ESPColor)
+                end
+            else
+                removeHighlight(player.Character)
             end
         end
     else
-        esp.box.Visible = false
-        if settings.healthBarEnabled then
-            esp.healthBar.Visible = false
-        end
+        removeHighlight(player.Character)
     end
 end
 
--- Aimbot Functions
 local function getClosestPlayerToCursor()
-    local mouse = localPlayer:GetMouse()
+    local mouse = LocalPlayer:GetMouse()
     local closestPlayer = nil
     local shortestDistance = math.huge
-    for _, player in ipairs(players:GetPlayers()) do
-        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             local character = player.Character
             local characterPosition = character.HumanoidRootPart.Position
-            local screenPosition, onScreen = camera:WorldToScreenPoint(characterPosition)
+            local screenPosition, onScreen = Camera:WorldToScreenPoint(characterPosition)
             if onScreen then
                 local mousePosition = Vector2.new(mouse.X, mouse.Y)
                 local distance = (Vector2.new(screenPosition.X, screenPosition.Y) - mousePosition).Magnitude
@@ -185,7 +134,7 @@ local function handleAimlockAndStrafe()
         end
 
         -- Directly set the camera CFrame to target the predicted position
-        camera.CFrame = CFrame.new(camera.CFrame.Position, predictedPosition)
+        Camera.CFrame = CFrame.new(Camera.CFrame.Position, predictedPosition)
 
         if strafeEnabled then
             if tick() - lastDirectionChange > directionChangeInterval then
@@ -196,59 +145,118 @@ local function handleAimlockAndStrafe()
 
             -- Calculate strafe position around the target with random offset
             local randomOffset = math.random(-CONFIG.StrafeRandomRange, CONFIG.StrafeRandomRange)
-            local strafeOffset = (character.HumanoidRootPart.Position - localPlayer.Character.HumanoidRootPart.Position).unit * CONFIG.StrafeDistance
+            local strafeOffset = (character.HumanoidRootPart.Position - HumanoidRootPart.Position).unit * CONFIG.StrafeDistance
             local strafePosition = CFrame.new(character.HumanoidRootPart.Position) * CFrame.Angles(0, math.rad(randomOffset + strafeAngle), 0) * CFrame.new(strafeOffset)
 
             -- Update the player's position to simulate strafing around the target
-            localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(strafePosition.Position, character.HumanoidRootPart.Position)
+            HumanoidRootPart.CFrame = CFrame.new(strafePosition.Position, character.HumanoidRootPart.Position)
+
+            -- Draw a circle around the target to represent the strafing area
+            local circle = circleIndicators[character] or character:FindFirstChild("CircleIndicator")
+            if not circle then
+                circle = Instance.new("BillboardGui")
+                circle.Name = "CircleIndicator"
+                circle.Size = UDim2.new(0, CONFIG.CircleRadius * 2, 0, CONFIG.CircleRadius * 2)
+                circle.AlwaysOnTop = true
+                circle.Adornee = character.HumanoidRootPart
+                circle.Parent = character
+                local frame = Instance.new("Frame")
+                frame.Size = UDim2.new(1, 0, 1, 0)
+                frame.BackgroundColor3 = CONFIG.CircleColor
+                frame.BackgroundTransparency = 0.5
+                frame.Parent = circle
+                circleIndicators[character] = circle
+            end
+            circle.Size = UDim2.new(0, CONFIG.CircleRadius * 2, 0, CONFIG.CircleRadius * 2)
         end
     end
 end
 
--- Main ESP Handling
-for _, player in pairs(players:GetPlayers()) do
-    if player ~= localPlayer then
-        createEsp(player)
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.Q then
+        aiming = not aiming
+        if aiming then
+            targetPlayer = getClosestPlayerToCursor()
+            print(aiming and targetPlayer and "Aimlock enabled. Targeting: " .. targetPlayer.Name or "No target found.")
+        else
+            targetPlayer = nil
+            print("Aimlock disabled.")
+        end
+    elseif input.KeyCode == Enum.KeyCode.Y then
+        strafeEnabled = not strafeEnabled
+        print(strafeEnabled and "Target strafe enabled." or "Target strafe disabled.")
+    elseif input.KeyCode == Enum.KeyCode.X then
+        aiming = false
+        strafeEnabled = false
+        targetPlayer = nil
+        print("Fully unlocked. Aimlock and strafe disabled.")
+    end
+end)
+
+local function onChatMessage(message)
+    if message:lower() == ".binds" then
+        local bindsInfo = [[
+Commands:
+  Q - Toggle aimlock (lock on/off target)
+  Y - Toggle target strafe (spin around the target)
+  X - Fully unlock (disable aimlock and strafe)
+]]
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Head") then
+            Chat:Chat(LocalPlayer.Character.Head, bindsInfo, Enum.ChatColor.Blue)
+        end
     end
 end
 
-players.PlayerAdded:Connect(function(player)
-    createEsp(player)
-end)
+LocalPlayer.Chatted:Connect(onChatMessage)
 
-players.PlayerRemoving:Connect(function(player)
-    removeEsp(player)
-end)
-
-runService:BindToRenderStep("esp", Enum.RenderPriority.Camera.Value, function()
+RunService.RenderStepped:Connect(function()
     if CONFIG.ESPEnabled then
-        for player, esp in pairs(espCache) do
-            if settings.teamCheck and player.Team == localPlayer.Team then
-                esp.box.Visible = false
-                if settings.healthBarEnabled then
-                    esp.healthBar.Visible = false
+        for _, player in ipairs(Players:GetPlayers()) do
+            updatePlayerESP(player)
+        end
+    else
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player.Character then
+                removeHighlight(player.Character)
+                local circle = circleIndicators[player.Character]
+                if circle then
+                    circle:Destroy()
                 end
-            else
-                updateEsp(player, esp)
             end
         end
     end
     handleAimlockAndStrafe()
 end)
 
--- User Input Handling
-local userInputService = game:GetService("UserInputService")
-userInputService.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton2 then -- Right-click for aimbot
-        targetPlayer = getClosestPlayerToCursor()
-        aiming = true
-    elseif input.KeyCode == Enum.KeyCode.Y then -- Press 'Y' to toggle strafe
-        strafeEnabled = not strafeEnabled
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        if CONFIG.ESPEnabled then
+            updatePlayerESP(player)
+        end
+    end)
+end)
+
+LocalPlayer.CharacterAdded:Connect(function(character)
+    HumanoidRootPart = character:WaitForChild("HumanoidRootPart")
+end)
+
+Players.PlayerRemoving:Connect(function(player)
+    if player.Character then
+        removeHighlight(player.Character)
+        local circle = circleIndicators[player.Character]
+        if circle then
+            circle:Destroy()
+        end
     end
 end)
 
-userInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton2 then
-        aiming = false
-    end
+Players.PlayerRemoving:Connect(function(player)
+    player.CharacterRemoving:Connect(function(character)
+        removeHighlight(character)
+        local circle = circleIndicators[character]
+        if circle then
+            circle:Destroy()
+        end
+    end)
 end)
