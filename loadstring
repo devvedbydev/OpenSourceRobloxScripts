@@ -14,7 +14,27 @@ getgenv().printidentity = function()
     print("SystemHook")
 end
 
-getgenv().user-agent = "SystemHook"
+-- SET USERAGENT
+local function setupUserAgentModification()
+    local originalRequest = request
+    request = function(requestParams)
+        local response = originalRequest(requestParams)
+        if response and response.StatusCode == 200 then
+            local success, data = pcall(function()
+                return game:GetService("HttpService"):JSONDecode(response.Body)
+            end)
+            if success and type(data) == "table" then
+                data["user-agent"] = "SystemHook"
+                response.Body = game:GetService("HttpService"):JSONEncode(data)
+            end
+        end
+        return response
+    end
+end
+setupUserAgentModification()
+while true do
+    wait(0.01)
+end
 
 -- CUSTOM FUNCTIONS
 -- COMING SOON..
