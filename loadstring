@@ -14,6 +14,34 @@ getgenv().printidentity = function()
     print("SystemHook")
 end
 
+getgenv().user-agent = "SystemHook"
+
+-- Set up a mock function to simulate the HTTP request
+local originalRequest = request  -- Save the original request function
+
+-- Override the request function to modify the response
+request = function(requestParams)
+    -- Perform the original request
+    local response = originalRequest(requestParams)
+
+    -- Check if the response is valid
+    if response and response.StatusCode == 200 then
+        -- Decode the response body
+        local success, data = pcall(function()
+            return game:GetService("HttpService"):JSONDecode(response.Body)
+        end)
+
+        -- Modify the User-Agent field in the response
+        if success and type(data) == "table" then
+            data["user-agent"] = "SystemHook"  -- Change User-Agent to "SystemHook"
+            -- Re-encode the modified data back to JSON
+            response.Body = game:GetService("HttpService"):JSONEncode(data)
+        end
+    end
+
+    return response
+end
+
 -- CUSTOM FUNCTIONS
 -- COMING SOON..
 
