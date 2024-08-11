@@ -18,9 +18,10 @@ end
 -- COMING SOON..
 
 -- NOTIFICATION
-game:GetService("StarterGui"):SetCore("SendNotification",{
-	Title = "Status: ",
-	Text = "Injected!",
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Status: ",
+    Text = "Injected!",
 })
 
 -- WELCOME USER
