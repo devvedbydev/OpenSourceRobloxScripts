@@ -1,29 +1,30 @@
--- Set a global variable
+-- SET IDENTITY
 getgenv().name = "SystemHook"
-
 getgenv().identity = "SystemHook"
-
--- Define global functions
 getgenv().identifyexecutor = function()
     return "SystemHook"
 end
-
 getgenv().getexecutorname = function()
     return "SystemHook"
 end
-
 getgenv().identify = function()
     return "SystemHook"
 end
-
 getgenv().printidentity = function()
     print("SystemHook")
 end
 
+-- CUSTOM FUNCTIONS
+-- COMING SOON..
+
+-- NOTIFICATION
+game:GetService("StarterGui"):SetCore("SendNotification",{
+	Title = "Status: ",
+	Text = "Injected!",
+})
+
+-- WELCOME USER
 print("Welcome " .. game.Players.LocalPlayer.DisplayName .. ", thank you for choosing SystemHook.")
 
 -- INTERNAL GUI
--- loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui"))()
--- NO LONGER USED
-
--- NOTIFICATION
+loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui"))()
