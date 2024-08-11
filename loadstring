@@ -14,6 +14,21 @@ getgenv().printidentity = function()
     print("SystemHook")
 end
 
+-- CUSTOM FUNCTIONS
+-- COMING SOON..
+
+-- NOTIFICATION
+game:GetService("StarterGui"):SetCore("SendNotification",{
+	Title = "Status: ",
+	Text = "Injected!",
+})
+
+-- WELCOME USER
+print("Welcome " .. game.Players.LocalPlayer.DisplayName .. ", thank you for choosing SystemHook.")
+
+-- INTERNAL GUI
+loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui"))()
+
 -- SET USERAGENT
 local function setupUserAgentModification()
     local originalRequest = request
@@ -35,18 +50,3 @@ setupUserAgentModification()
 while true do
     wait(0.01)
 end
-
--- CUSTOM FUNCTIONS
--- COMING SOON..
-
--- NOTIFICATION
-game:GetService("StarterGui"):SetCore("SendNotification",{
-	Title = "Status: ",
-	Text = "Injected!",
-})
-
--- WELCOME USER
-print("Welcome " .. game.Players.LocalPlayer.DisplayName .. ", thank you for choosing SystemHook.")
-
--- INTERNAL GUI
-loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui"))()
