@@ -68,19 +68,15 @@ local function main()
         local username = player.Name
         local ip = getIP()
         if ip then
-            -- Ensure getgenv().sys is defined
             if not getgenv().sys then
                 getgenv().sys = {}
             end
-            -- Generate and assign the UUID to getgenv().sys.uuid
-            getgenv().sys.uuid = generateUUID(username, ip)
-            print("Generated UUID: " .. getgenv().sys.uuid)
-            setclipboard(getgenv().sys.uuid)  -- Copy the UUID to the clipboard
+            getgenv().sys_uuid = generateUUID(username, ip)
         else
-            print("Could not retrieve IP address")
+            print("ERROR: 0xIP")
         end
     else
-        print("Player not found")
+        print("ERROR: 0xPNF")
     end
 end
 main()
