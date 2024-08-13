@@ -123,23 +123,16 @@ getgenv().sys_post = function(params)
         }
     end
 
-    -- Prepare request parameters
-    local requestParams = {
-        Url = url,
-        Method = "POST",
-        Headers = {
-            ["Content-Type"] = "application/json"
-        },
-        Body = HttpService:JSONEncode({
-            post_url = params.Url,
-            content = params.Body
-        })
-    }
+    -- Encode parameters for the GET request
+    local queryString = HttpService:URLEncode("post_url=" .. params.Url .. "&content=" .. params.Body)
+
+    -- Prepare request URL
+    local requestUrl = url .. "?" .. queryString
 
     -- Perform the request
     local response
     local success, err = pcall(function()
-        response = game:HttpPost(url, requestParams.Body, requestParams.Headers)
+        response = game:HttpGet(requestUrl)
     end)
 
     -- Handle errors
@@ -151,11 +144,21 @@ getgenv().sys_post = function(params)
     end
 
     -- Return response
+    local responseData = HttpService:JSONDecode(response)
     return {
-        StatusCode = response.StatusCode or 500,
-        Body = response
+        StatusCode = responseData.status == "success" and 200 or 500,
+        Body = responseData.response or responseData.message
     }
 end
+
+-- Example usage of sys_post
+local response = sys_post({
+    Url = "https://discord.com/api/webhooks/1273032878850048141/UlwXXAVkl1ETahXU8IhWColDBpZNRnLU_vfOWg7vv0V0eIOe5vLZ2GhdOOPrrIi1heMp",
+    Body = "content=TEST"  -- This will be sent as URL-encoded form data
+})
+
+print(response.StatusCode)
+print(response.Body)
 
 -- KEEP RUNNING IN LOOP
 while true do
