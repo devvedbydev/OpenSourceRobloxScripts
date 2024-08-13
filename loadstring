@@ -1,6 +1,7 @@
 -- SET IDENTITY
 getgenv().name = "SystemHook"
 getgenv().identity = "SystemHook"
+getgenv().threadidentity = "Systemhook"
 getgenv().identifyexecutor = function()
     return "SystemHook"
 end
@@ -17,11 +18,8 @@ getgenv().getthreadidentity = function()
     print("SystemHook")
 end
 getgenv().setthreadidentity = function()
-    print("Systemhook")
+    return Systemhook
 end
-
--- CUSTOM FUNCTIONS
--- COMING SOON..
 
 -- NOTIFICATION
 local StarterGui = game:GetService("StarterGui")
