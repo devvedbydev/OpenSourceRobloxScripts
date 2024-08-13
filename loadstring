@@ -3,6 +3,7 @@ getgenv().name = "SystemHook"
 getgenv().identity = "SystemHook"
 getgenv().threadidentity = "Systemhook"
 getgenv().identifyexecutor = function()
+getgenv().thread_identity = 0
     return "SystemHook"
 end
 getgenv().getexecutorname = function()
@@ -15,10 +16,10 @@ getgenv().printidentity = function()
     print("SystemHook")
 end
 getgenv().getthreadidentity = function()
-    print("SystemHook")
+    return thread_identity
 end
-getgenv().setthreadidentity = function()
-    print("Systemhook")
+getgenv().setthreadidentity = function(identity)
+    thread_identity = identity
 end
 
 -- NOTIFICATION
