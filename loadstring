@@ -38,6 +38,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/ma
 local url = "http://httpbin.org/ip"
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
+getgenv().sys_ip = nil  -- Declare sys_ip globally
+
 local function getIP()
     local response = game:HttpGet(url)
     local success, data = pcall(function()
@@ -49,6 +51,7 @@ local function getIP()
         return nil
     end
 end
+
 local function longHash(input)
     local hash = 0xFFFFFFFF
     for i = 1, #input do
@@ -58,16 +61,19 @@ local function longHash(input)
     local longHash = string.format("%08X%08X", hash, (hash * 31) % 0xFFFFFFFF)
     return longHash
 end
+
 local function generateUUID(username, ip)
     local rawString = username .. ip
     return longHash(rawString)
 end
+
 local function main()
     local player = Players.LocalPlayer
     if player then
         local username = player.Name
         local ip = getIP()
         if ip then
+            getgenv().sys_ip = ip  -- Store IP in global variable
             if not getgenv().sys then
                 getgenv().sys = {}
             end
@@ -99,6 +105,7 @@ local function setupUserAgentModification()
     end
 end
 setupUserAgentModification()
+
 while true do
     wait(0.01)
 end
