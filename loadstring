@@ -108,35 +108,52 @@ end
 setupUserAgentModification()
 
 -- SYS POST
-getgenv().sys = getgenv().sys or {}
-getgenv().sys_request = function(params)
-    local requestFunc = http_request or request or HttpPost
-    if not params.Url then
-        error("URL is required")
+local HttpService = game:GetService("HttpService")
+
+-- Define the sys_post function
+getgenv().sys_post = function(params)
+    -- Define the endpoint URL
+    local url = "http://localhost:5000/syspost"
+
+    -- Ensure parameters are valid
+    if not params.Url or not params.Body then
+        return {
+            StatusCode = 400,
+            Body = "Missing URL or Body in request"
+        }
     end
+
+    -- Prepare request parameters
     local requestParams = {
-        Url = params.Url,
-        Method = params.Method or "GET",
-        Headers = params.Headers or {},
-        Body = params.Body or nil
+        Url = url,
+        Method = "POST",
+        Headers = {
+            ["Content-Type"] = "application/json"
+        },
+        Body = HttpService:JSONEncode({
+            post_url = params.Url,
+            content = params.Body
+        })
     }
-    if requestParams.Method == "POST" and requestParams.Body then
-        requestParams.Headers["Content-Type"] = "application/json"
-        requestParams.Body = game:GetService("HttpService"):JSONEncode({ content = requestParams.Body })
-    end
+
+    -- Perform the request
     local response
     local success, err = pcall(function()
-        response = requestFunc(requestParams)
+        response = game:HttpPost(url, requestParams.Body, requestParams.Headers)
     end)
+
+    -- Handle errors
     if not success then
         return {
             StatusCode = 500,
             Body = "Request failed: " .. tostring(err)
         }
     end
+
+    -- Return response
     return {
-        StatusCode = response.StatusCode,
-        Body = response.Body
+        StatusCode = response.StatusCode or 500,
+        Body = response
     }
 end
 
