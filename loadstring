@@ -109,56 +109,37 @@ setupUserAgentModification()
 
 -- SYS POST
 local HttpService = game:GetService("HttpService")
-
--- Define the sys_post function
+local function urlEncode(str)
+    return str:gsub("[^%w]", function(c)
+        return string.format("%%%02X", string.byte(c))
+    end):gsub(" ", "+")
+end
 getgenv().sys_post = function(params)
-    -- Define the endpoint URL
     local url = "http://localhost:5000/syspost"
-
-    -- Ensure parameters are valid
     if not params.Url or not params.Body then
         return {
             StatusCode = 400,
             Body = "Missing URL or Body in request"
         }
     end
-
-    -- Encode parameters for the GET request
-    local queryString = HttpService:URLEncode("post_url=" .. params.Url .. "&content=" .. params.Body)
-
-    -- Prepare request URL
+    local queryString = "post_url=" .. urlEncode(params.Url) .. "&content=" .. urlEncode(params.Body)
     local requestUrl = url .. "?" .. queryString
-
-    -- Perform the request
     local response
     local success, err = pcall(function()
         response = game:HttpGet(requestUrl)
     end)
-
-    -- Handle errors
     if not success then
         return {
             StatusCode = 500,
             Body = "Request failed: " .. tostring(err)
         }
     end
-
-    -- Return response
     local responseData = HttpService:JSONDecode(response)
     return {
         StatusCode = responseData.status == "success" and 200 or 500,
         Body = responseData.response or responseData.message
     }
 end
-
--- Example usage of sys_post
-local response = sys_post({
-    Url = "https://discord.com/api/webhooks/1273032878850048141/UlwXXAVkl1ETahXU8IhWColDBpZNRnLU_vfOWg7vv0V0eIOe5vLZ2GhdOOPrrIi1heMp",
-    Body = "content=TEST"  -- This will be sent as URL-encoded form data
-})
-
-print(response.StatusCode)
-print(response.Body)
 
 -- KEEP RUNNING IN LOOP
 while true do
