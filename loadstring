@@ -13,6 +13,12 @@ end
 getgenv().printidentity = function()
     print("SystemHook")
 end
+getgenv().getthreadidentity = function()
+    print("SystemHook")
+end
+getgenv().setthreadidentity = function()
+    print("Systemhook")
+end
 
 -- CUSTOM FUNCTIONS
 -- COMING SOON..
