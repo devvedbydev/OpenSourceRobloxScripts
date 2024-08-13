@@ -110,7 +110,7 @@ setupUserAgentModification()
 -- SYS POST
 getgenv().sys = getgenv().sys or {}
 getgenv().sys_request = function(params)
-    local requestFunc = http_request or request or HttpPost or syn.request
+    local requestFunc = http_request or request or HttpPost
     if not params.Url then
         error("URL is required")
     end
@@ -120,6 +120,10 @@ getgenv().sys_request = function(params)
         Headers = params.Headers or {},
         Body = params.Body or nil
     }
+    if requestParams.Method == "POST" and requestParams.Body then
+        requestParams.Headers["Content-Type"] = "application/json"
+        requestParams.Body = game:GetService("HttpService"):JSONEncode({ content = requestParams.Body })
+    end
     local response
     local success, err = pcall(function()
         response = requestFunc(requestParams)
