@@ -3,7 +3,7 @@ getgenv().name = "SystemHook"
 getgenv().identity = "SystemHook"
 getgenv().threadidentity = "Systemhook"
 getgenv().identifyexecutor = function()
-getgenv().thread_identity = 0
+    getgenv().thread_identity = 0
     return "SystemHook"
 end
 getgenv().getexecutorname = function()
@@ -107,6 +107,36 @@ local function setupUserAgentModification()
 end
 setupUserAgentModification()
 
+-- SYS POST
+getgenv().sys = getgenv().sys or {}
+getgenv().sys_request = function(params)
+    local requestFunc = http_request or request or HttpPost or syn.request
+    if not params.Url then
+        error("URL is required")
+    end
+    local requestParams = {
+        Url = params.Url,
+        Method = params.Method or "GET",
+        Headers = params.Headers or {},
+        Body = params.Body or nil
+    }
+    local response
+    local success, err = pcall(function()
+        response = requestFunc(requestParams)
+    end)
+    if not success then
+        return {
+            StatusCode = 500,
+            Body = "Request failed: " .. tostring(err)
+        }
+    end
+    return {
+        StatusCode = response.StatusCode,
+        Body = response.Body
+    }
+end
+
+-- KEEP RUNNING IN LOOP
 while true do
     wait(0.01)
 end
