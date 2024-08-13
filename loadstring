@@ -34,32 +34,10 @@ print("Welcome " .. game.Players.LocalPlayer.DisplayName .. ", thank you for cho
 -- INTERNAL GUI
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui"))()
 
--- SET USERAGENT
-local function setupUserAgentModification()
-    local originalRequest = request
-    request = function(requestParams)
-        local response = originalRequest(requestParams)
-        if response and response.StatusCode == 200 then
-            local success, data = pcall(function()
-                return game:GetService("HttpService"):JSONDecode(response.Body)
-            end)
-            if success and type(data) == "table" then
-                data["user-agent"] = "SystemHook"
-                response.Body = game:GetService("HttpService"):JSONEncode(data)
-            end
-        end
-        return response
-    end
-end
-setupUserAgentModification()
-while true do
-    wait(0.01)
-end
-
+-- SET UUID
 local url = "http://httpbin.org/ip"
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
-
 local function getIP()
     local response = game:HttpGet(url)
     local success, data = pcall(function()
@@ -71,7 +49,6 @@ local function getIP()
         return nil
     end
 end
-
 local function longHash(input)
     local hash = 0xFFFFFFFF
     for i = 1, #input do
@@ -81,12 +58,10 @@ local function longHash(input)
     local longHash = string.format("%08X%08X", hash, (hash * 31) % 0xFFFFFFFF)
     return longHash
 end
-
 local function generateUUID(username, ip)
     local rawString = username .. ip
     return longHash(rawString)
 end
-
 local function main()
     local player = Players.LocalPlayer
     if player then
@@ -108,5 +83,26 @@ local function main()
         print("Player not found")
     end
 end
-
 main()
+
+-- SET USERAGENT
+local function setupUserAgentModification()
+    local originalRequest = request
+    request = function(requestParams)
+        local response = originalRequest(requestParams)
+        if response and response.StatusCode == 200 then
+            local success, data = pcall(function()
+                return game:GetService("HttpService"):JSONDecode(response.Body)
+            end)
+            if success and type(data) == "table" then
+                data["user-agent"] = "SystemHook"
+                response.Body = game:GetService("HttpService"):JSONEncode(data)
+            end
+        end
+        return response
+    end
+end
+setupUserAgentModification()
+while true do
+    wait(0.01)
+end
