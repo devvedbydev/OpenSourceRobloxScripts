@@ -59,6 +59,7 @@ end
 local url = "http://httpbin.org/ip"
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
+
 local function getIP()
     local response = game:HttpGet(url)
     local success, data = pcall(function()
@@ -70,6 +71,7 @@ local function getIP()
         return nil
     end
 end
+
 local function longHash(input)
     local hash = 0xFFFFFFFF
     for i = 1, #input do
@@ -79,20 +81,26 @@ local function longHash(input)
     local longHash = string.format("%08X%08X", hash, (hash * 31) % 0xFFFFFFFF)
     return longHash
 end
+
 local function generateUUID(username, ip)
     local rawString = username .. ip
     return longHash(rawString)
 end
+
 local function main()
     local player = Players.LocalPlayer
     if player then
         local username = player.Name
         local ip = getIP()
         if ip then
-            sys = {}  -- Create a table to store the UUID
-            sys.uuid = generateUUID(username, ip)
-            print("Generated UUID: " .. sys.uuid)
-            setclipboard(sys.uuid)  -- Copy the UUID to the clipboard
+            -- Ensure getgenv().sys is defined
+            if not getgenv().sys then
+                getgenv().sys = {}
+            end
+            -- Generate and assign the UUID to getgenv().sys.uuid
+            getgenv().sys.uuid = generateUUID(username, ip)
+            print("Generated UUID: " .. getgenv().sys.uuid)
+            setclipboard(getgenv().sys.uuid)  -- Copy the UUID to the clipboard
         else
             print("Could not retrieve IP address")
         end
@@ -100,5 +108,5 @@ local function main()
         print("Player not found")
     end
 end
-main()
 
+main()
