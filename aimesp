@@ -1,7 +1,7 @@
 local CONFIG = {
     ESPColor = Color3.fromRGB(173, 216, 230),
     TargetColor = Color3.fromRGB(255, 255, 255),
-    PredictionTime = 0.079,
+    PredictionTime = 0.166,
     ESPEnabled = true,
     TargetStrafe = false,
     StrafeDistance = 20,
