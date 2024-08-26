@@ -78,10 +78,15 @@ local function updatePlayerESP(player)
                 color = Color3.fromRGB(255, 0, 0) -- Red for invisible
             end
 
-            if player == targetPlayer then
-                updateHighlight(player.Character, CONFIG.TargetColor)
+            -- Update highlight only if in view
+            if onScreen then
+                if player == targetPlayer then
+                    updateHighlight(player.Character, CONFIG.TargetColor)
+                else
+                    updateHighlight(player.Character, color)
+                end
             else
-                updateHighlight(player.Character, color)
+                removeHighlight(player.Character)
             end
         else
             removeHighlight(player.Character)
@@ -226,8 +231,23 @@ end
 LocalPlayer.Chatted:Connect(onChatMessage)
 
 local function updateAllPlayerESP()
+    local playersInView = {}
     for _, player in ipairs(Players:GetPlayers()) do
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local humanoidRootPart = player.Character.HumanoidRootPart
+            local screenPosition, onScreen = Camera:WorldToViewportPoint(humanoidRootPart.Position)
+            if onScreen then
+                table.insert(playersInView, player)
+            end
+        end
+    end
+
+    -- Limit highlights to the first 30 players in view
+    local playerCount = 0
+    for _, player in ipairs(playersInView) do
+        if playerCount >= 30 then break end
         updatePlayerESP(player)
+        playerCount = playerCount + 1
     end
 end
 
