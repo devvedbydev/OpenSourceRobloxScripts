@@ -40,12 +40,14 @@ local function updateHighlight(character, color)
         highlight.Name = "Highlight"
         highlight.Adornee = character
         highlight.Parent = character
+        highlight.FillColor = Color3.new(1, 1, 1) -- Set default fill color
+        highlight.FillTransparency = 1 -- Fully transparent fill
+        highlight.OutlineColor = color
+        highlight.OutlineTransparency = 0.5
         highlights[character] = highlight
+    else
+        highlight.OutlineColor = color
     end
-    highlight.FillColor = color
-    highlight.FillTransparency = 0.5
-    highlight.OutlineColor = color
-    highlight.OutlineTransparency = 0.3
 end
 
 local function removeHighlight(character)
@@ -61,15 +63,28 @@ local function updatePlayerESP(player)
         if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             local humanoidRootPart = player.Character.HumanoidRootPart
             local screenPosition, onScreen = Camera:WorldToViewportPoint(humanoidRootPart.Position)
-            if onScreen then
-                if player == targetPlayer then
-                    updateHighlight(player.Character, CONFIG.TargetColor)
+            local color
+            if player == LocalPlayer then
+                color = Color3.fromRGB(0, 0, 255) -- Blue for local player
+            elseif onScreen then
+                local ray = Ray.new(Camera.CFrame.Position, humanoidRootPart.Position - Camera.CFrame.Position)
+                local hitPart = workspace:FindPartOnRay(ray)
+                if hitPart and hitPart:IsDescendantOf(player.Character) then
+                    color = Color3.fromRGB(0, 255, 0) -- Green for visible
                 else
-                    updateHighlight(player.Character, CONFIG.ESPColor)
+                    color = Color3.fromRGB(255, 0, 0) -- Red for invisible
                 end
             else
-                removeHighlight(player.Character)
+                color = Color3.fromRGB(255, 0, 0) -- Red for invisible
             end
+
+            if player == targetPlayer then
+                updateHighlight(player.Character, CONFIG.TargetColor)
+            else
+                updateHighlight(player.Character, color)
+            end
+        else
+            removeHighlight(player.Character)
         end
     else
         removeHighlight(player.Character)
@@ -210,11 +225,15 @@ end
 
 LocalPlayer.Chatted:Connect(onChatMessage)
 
+local function updateAllPlayerESP()
+    for _, player in ipairs(Players:GetPlayers()) do
+        updatePlayerESP(player)
+    end
+end
+
 RunService.RenderStepped:Connect(function()
     if CONFIG.ESPEnabled then
-        for _, player in ipairs(Players:GetPlayers()) do
-            updatePlayerESP(player)
-        end
+        updateAllPlayerESP()
     else
         for _, player in ipairs(Players:GetPlayers()) do
             if player.Character then
@@ -239,6 +258,7 @@ end)
 
 LocalPlayer.CharacterAdded:Connect(function(character)
     HumanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    updateAllPlayerESP()
 end)
 
 Players.PlayerRemoving:Connect(function(player)
@@ -259,4 +279,4 @@ Players.PlayerRemoving:Connect(function(player)
             circle:Destroy()
         end
     end)
-end) 
+end)
