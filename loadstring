@@ -22,13 +22,6 @@ getgenv().setthreadidentity = function(identity)
     thread_identity = identity
 end
 
--- NOTIFICATION
-local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-    Title = "Status: ",
-    Text = "Injected!",
-})
-
 -- WELCOME USER
 print("Welcome " .. game.Players.LocalPlayer.DisplayName .. ", thank you for choosing SystemHook.")
 
