@@ -245,7 +245,7 @@ local function updateAllPlayerESP()
     -- Limit highlights to the first 30 players in view
     local playerCount = 0
     for _, player in ipairs(playersInView) do
-        if playerCount >= 30 then break end
+        if playerCount >= 100 then break end
         updatePlayerESP(player)
         playerCount = playerCount + 1
     end
