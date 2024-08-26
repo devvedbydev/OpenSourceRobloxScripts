@@ -33,7 +33,7 @@ StarterGui:SetCore("SendNotification", {
 print("Welcome " .. game.Players.LocalPlayer.DisplayName .. ", thank you for choosing SystemHook.")
 
 -- INTERNAL GUI
-loadstring(game:HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui"))()
+loadstring(HttpGet("https://raw.githubusercontent.com/hitbyharibo/byfron/main/internal_ui"))()
 
 -- SET UUID
 local url = "http://httpbin.org/ip"
