@@ -229,23 +229,21 @@ end
 LocalPlayer.Chatted:Connect(onChatMessage)
 
 local function updateAllPlayerESP()
-    local playersInView = {}
     for _, player in ipairs(Players:GetPlayers()) do
         if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             local humanoidRootPart = player.Character.HumanoidRootPart
             local screenPosition, onScreen = Camera:WorldToViewportPoint(humanoidRootPart.Position)
+            -- Only update ESP if the player is in view
             if onScreen then
-                table.insert(playersInView, player)
+                updatePlayerESP(player)
+            else
+                removeHighlight(player.Character)
+                local circle = circleIndicators[player.Character]
+                if circle then
+                    circle:Destroy()
+                end
             end
         end
-    end
-
-    -- Limit highlights to the first 30 players in view
-    local playerCount = 0
-    for _, player in ipairs(playersInView) do
-        if playerCount >= 30 then break end
-        updatePlayerESP(player)
-        playerCount = playerCount + 1
     end
 end
 
