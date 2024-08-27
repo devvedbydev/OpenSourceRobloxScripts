@@ -20,8 +20,6 @@ local RunService = game:GetService("RunService")
 local Chat = game:GetService("Chat")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 
 local targetPlayer = nil
 local aiming = false
@@ -245,9 +243,15 @@ local function updateAllPlayerESP()
     -- Limit highlights to the first 30 players in view
     local playerCount = 0
     for _, player in ipairs(playersInView) do
-        if playerCount >= 100 then break end
+        if playerCount >= 30 then break end
         updatePlayerESP(player)
         playerCount = playerCount + 1
+    end
+end
+
+local function refreshPlayerESP(player)
+    if player.Character then
+        updatePlayerESP(player)
     end
 end
 
@@ -268,20 +272,18 @@ RunService.RenderStepped:Connect(function()
     handleAimlockAndStrafe()
 end)
 
-Players.PlayerAdded:Connect(function(player)
+local function onPlayerAdded(player)
     player.CharacterAdded:Connect(function()
-        if CONFIG.ESPEnabled then
-            updatePlayerESP(player)
-        end
+        refreshPlayerESP(player)
     end)
-end)
+end
 
-LocalPlayer.CharacterAdded:Connect(function(character)
+local function onCharacterAdded(character)
     HumanoidRootPart = character:WaitForChild("HumanoidRootPart")
     updateAllPlayerESP()
-end)
+end
 
-Players.PlayerRemoving:Connect(function(player)
+local function onPlayerRemoving(player)
     if player.Character then
         removeHighlight(player.Character)
         local circle = circleIndicators[player.Character]
@@ -289,14 +291,20 @@ Players.PlayerRemoving:Connect(function(player)
             circle:Destroy()
         end
     end
-end)
+end
 
-Players.PlayerRemoving:Connect(function(player)
-    player.CharacterRemoving:Connect(function(character)
-        removeHighlight(character)
-        local circle = circleIndicators[character]
-        if circle then
-            circle:Destroy()
-        end
-    end)
-end)
+local function onCharacterRemoving(character)
+    removeHighlight(character)
+    local circle = circleIndicators[character]
+    if circle then
+        circle:Destroy()
+    end
+end
+
+-- Connect to player events
+Players.PlayerAdded:Connect(onPlayerAdded)
+Players.PlayerRemoving:Connect(onPlayerRemoving)
+
+-- Connect to character events for the local player
+LocalPlayer.CharacterAdded:Connect(onCharacterAdded)
+LocalPlayer.CharacterRemoving:Connect(onCharacterRemoving)
