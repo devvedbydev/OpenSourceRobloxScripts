@@ -297,12 +297,18 @@ local function onPlayerRemoving(player)
     end
 end
 
-local function onCharacterRemoving(character)
-    removeHighlight(character)
-    local circle = circleIndicators[character]
-    if circle then
-        circle:Destroy()
+local function onCharacterAdded(character)
+    HumanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+
+    -- Check if HumanoidRootPart exists and is valid
+    if not HumanoidRootPart then
+        -- Reset character if HumanoidRootPart is missing or nil
+        LocalPlayer:LoadCharacter()
+        return
     end
+
+    -- Continue with ESP update if HumanoidRootPart is found
+    updateAllPlayerESP()
 end
 
 -- Connect to player events
