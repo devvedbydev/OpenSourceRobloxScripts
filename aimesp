@@ -144,58 +144,54 @@ end
 local function handleAimlockAndStrafe()
     if aiming and targetPlayer and targetPlayer.Character then
         local character = targetPlayer.Character
-        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-        local localCharacter = LocalPlayer.Character
-        local localHumanoidRootPart = localCharacter and localCharacter:FindFirstChild("HumanoidRootPart")
+        local predictedPosition
+        if CONFIG.AimbotFOV >= 90 then
+            predictedPosition = predictFuturePosition(character, CONFIG.PredictionTime)
+        else
+            predictedPosition = predictHeadshotPosition(character, CONFIG.HeadshotPredictionTime)
+        end
 
-        -- Check if HumanoidRootPart exists for both the target and the local player
-        if humanoidRootPart and localHumanoidRootPart then
-            local predictedPosition
-            if CONFIG.AimbotFOV >= 90 then
-                predictedPosition = predictFuturePosition(character, CONFIG.PredictionTime)
+        -- Directly set the camera CFrame to target the predicted position
+        Camera.CFrame = CFrame.new(Camera.CFrame.Position, predictedPosition)
+
+        if strafeEnabled then
+            if tick() - lastDirectionChange > directionChangeInterval then
+                strafeAngle = math.random(0, 360)
+                currentStrafeSpeed = math.random(1, CONFIG.StrafeSpeed * 2)
+                lastDirectionChange = tick()
+            end
+
+            -- Calculate strafe position around the target with random offset
+            local randomOffset = math.random(-CONFIG.StrafeRandomRange, CONFIG.StrafeRandomRange)
+            local strafeOffset = (character.HumanoidRootPart.Position - HumanoidRootPart.Position).unit * CONFIG.StrafeDistance
+            local strafePosition = CFrame.new(character.HumanoidRootPart.Position) * CFrame.Angles(0, math.rad(randomOffset + strafeAngle), 0) * CFrame.new(strafeOffset)
+
+            -- Check if strafePosition is valid; if not, reset character position
+            if strafePosition then
+                HumanoidRootPart.CFrame = CFrame.new(strafePosition.Position, character.HumanoidRootPart.Position)
             else
-                predictedPosition = predictHeadshotPosition(character, CONFIG.HeadshotPredictionTime)
+                -- Reset character position to a default or safe position
+                print("Strafe position not found. Resetting character position.")
+                HumanoidRootPart.CFrame = CFrame.new(Vector3.new(0, 10, 0)) -- Example reset position (you can customize it)
             end
 
-            -- Directly set the camera CFrame to target the predicted position
-            Camera.CFrame = CFrame.new(Camera.CFrame.Position, predictedPosition)
-
-            if strafeEnabled then
-                if tick() - lastDirectionChange > directionChangeInterval then
-                    strafeAngle = math.random(0, 360)
-                    currentStrafeSpeed = math.random(1, CONFIG.StrafeSpeed * 2)
-                    lastDirectionChange = tick()
-                end
-
-                -- Calculate strafe position around the target with random offset
-                local randomOffset = math.random(-CONFIG.StrafeRandomRange, CONFIG.StrafeRandomRange)
-                local strafeDirection = CFrame.Angles(0, math.rad(randomOffset + strafeAngle), 0).LookVector
-                local strafePosition = humanoidRootPart.Position + strafeDirection * CONFIG.StrafeDistance
-
-                -- Use MoveTo for moving the character
-                local humanoid = localCharacter:FindFirstChild("Humanoid")
-                if humanoid then
-                    humanoid:MoveTo(strafePosition)
-                end
-
-                -- Draw a circle around the target to represent the strafing area
-                local circle = circleIndicators[character] or character:FindFirstChild("CircleIndicator")
-                if not circle then
-                    circle = Instance.new("BillboardGui")
-                    circle.Name = "CircleIndicator"
-                    circle.Size = UDim2.new(0, CONFIG.CircleRadius * 2, 0, CONFIG.CircleRadius * 2)
-                    circle.AlwaysOnTop = true
-                    circle.Adornee = humanoidRootPart
-                    circle.Parent = character
-                    local frame = Instance.new("Frame")
-                    frame.Size = UDim2.new(1, 0, 1, 0)
-                    frame.BackgroundColor3 = CONFIG.CircleColor
-                    frame.BackgroundTransparency = 0.5
-                    frame.Parent = circle
-                    circleIndicators[character] = circle
-                end
+            -- Draw a circle around the target to represent the strafing area
+            local circle = circleIndicators[character] or character:FindFirstChild("CircleIndicator")
+            if not circle then
+                circle = Instance.new("BillboardGui")
+                circle.Name = "CircleIndicator"
                 circle.Size = UDim2.new(0, CONFIG.CircleRadius * 2, 0, CONFIG.CircleRadius * 2)
+                circle.AlwaysOnTop = true
+                circle.Adornee = character.HumanoidRootPart
+                circle.Parent = character
+                local frame = Instance.new("Frame")
+                frame.Size = UDim2.new(1, 0, 1, 0)
+                frame.BackgroundColor3 = CONFIG.CircleColor
+                frame.BackgroundTransparency = 0.5
+                frame.Parent = circle
+                circleIndicators[character] = circle
             end
+            circle.Size = UDim2.new(0, CONFIG.CircleRadius * 2, 0, CONFIG.CircleRadius * 2)
         end
     end
 end
