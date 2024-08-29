@@ -166,14 +166,8 @@ local function handleAimlockAndStrafe()
             local strafeOffset = (character.HumanoidRootPart.Position - HumanoidRootPart.Position).unit * CONFIG.StrafeDistance
             local strafePosition = CFrame.new(character.HumanoidRootPart.Position) * CFrame.Angles(0, math.rad(randomOffset + strafeAngle), 0) * CFrame.new(strafeOffset)
 
-            -- Check if strafePosition is valid; if not, reset character position
-            if strafePosition then
-                HumanoidRootPart.CFrame = CFrame.new(strafePosition.Position, character.HumanoidRootPart.Position)
-            else
-                -- Reset character position to a default or safe position
-                print("Strafe position not found. Resetting character position.")
-                HumanoidRootPart.CFrame = CFrame.new(Vector3.new(0, 10, 0)) -- Example reset position (you can customize it)
-            end
+            -- Update the player's position to simulate strafing around the target
+            HumanoidRootPart.CFrame = CFrame.new(strafePosition.Position, character.HumanoidRootPart.Position)
 
             -- Draw a circle around the target to represent the strafing area
             local circle = circleIndicators[character] or character:FindFirstChild("CircleIndicator")
@@ -297,18 +291,12 @@ local function onPlayerRemoving(player)
     end
 end
 
-local function onCharacterAdded(character)
-    HumanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-
-    -- Check if HumanoidRootPart exists and is valid
-    if not HumanoidRootPart then
-        -- Reset character if HumanoidRootPart is missing or nil
-        LocalPlayer:LoadCharacter()
-        return
+local function onCharacterRemoving(character)
+    removeHighlight(character)
+    local circle = circleIndicators[character]
+    if circle then
+        circle:Destroy()
     end
-
-    -- Continue with ESP update if HumanoidRootPart is found
-    updateAllPlayerESP()
 end
 
 -- Connect to player events
@@ -317,4 +305,4 @@ Players.PlayerRemoving:Connect(onPlayerRemoving)
 
 -- Connect to character events for the local player
 LocalPlayer.CharacterAdded:Connect(onCharacterAdded)
-LocalPlayer.CharacterRemoving:Connect(onCharacterRemoving)
+LocalPlayer.CharacterRemoving:Connect(onCharacterRemoving)    
