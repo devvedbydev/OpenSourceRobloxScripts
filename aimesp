@@ -163,11 +163,14 @@ local function handleAimlockAndStrafe()
 
             -- Calculate strafe position around the target with random offset
             local randomOffset = math.random(-CONFIG.StrafeRandomRange, CONFIG.StrafeRandomRange)
-            local strafeOffset = (character.HumanoidRootPart.Position - HumanoidRootPart.Position).unit * CONFIG.StrafeDistance
-            local strafePosition = CFrame.new(character.HumanoidRootPart.Position) * CFrame.Angles(0, math.rad(randomOffset + strafeAngle), 0) * CFrame.new(strafeOffset)
+            local strafeDirection = CFrame.Angles(0, math.rad(randomOffset + strafeAngle), 0).LookVector
+            local strafePosition = character.HumanoidRootPart.Position + strafeDirection * CONFIG.StrafeDistance
 
-            -- Update the player's position to simulate strafing around the target
-            HumanoidRootPart.CFrame = CFrame.new(strafePosition.Position, character.HumanoidRootPart.Position)
+            -- Use MoveTo for moving the character
+            local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+            if humanoid then
+                humanoid:MoveTo(strafePosition)
+            end
 
             -- Draw a circle around the target to represent the strafing area
             local circle = circleIndicators[character] or character:FindFirstChild("CircleIndicator")
