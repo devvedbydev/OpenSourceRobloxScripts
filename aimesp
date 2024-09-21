@@ -31,6 +31,8 @@ local currentStrafeSpeed = CONFIG.StrafeSpeed
 local directionChangeInterval = 0.143 -- Interval for changing direction
 local lastDirectionChange = tick()
 
+local mousePositionLocked = nil -- New: Store locked mouse position
+
 local function updateHighlight(character, color)
     local highlight = highlights[character] or character:FindFirstChild("Highlight")
     if not highlight then
@@ -116,41 +118,31 @@ local function getClosestPlayerToCursor()
     return closestPlayer
 end
 
-local function predictHitPosition(character, predictionTime)
-    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-    if not humanoidRootPart then
-        return Vector3.new(0, 0, 0)
-    end
+local function predictHeadPosition(character, predictionTime)
+    local head = character:FindFirstChild("Head")
+    if not head then return Vector3.new(0, 0, 0) end
 
-    -- Determine if we are aiming for head or body based on random chance (80% for head, 20% for body)
-    local targetPart
-    if math.random(1, 100) <= 80 then
-        -- 80% chance to hit head
-        targetPart = character:FindFirstChild("Head")
-    else
-        -- 20% chance to hit body (HumanoidRootPart)
-        targetPart = humanoidRootPart
-    end
-
-    if not targetPart then
-        -- If no head is found, fallback to body (HumanoidRootPart)
-        targetPart = humanoidRootPart
-    end
-
-    local targetPosition = targetPart.Position
-    local velocity = humanoidRootPart.AssemblyLinearVelocity
-    local acceleration = humanoidRootPart.AssemblyAngularVelocity
-    return targetPosition + (velocity * predictionTime) + (0.5 * acceleration * predictionTime^2)
+    local headPosition = head.Position
+    local velocity = character.HumanoidRootPart.AssemblyLinearVelocity
+    return headPosition + (velocity * predictionTime)
 end
 
 local function handleAimlockAndStrafe()
     if aiming and targetPlayer and targetPlayer.Character then
         local character = targetPlayer.Character
-        local predictedPosition = predictHitPosition(character, CONFIG.PredictionTime)
+        local predictedPosition = predictHeadPosition(character, CONFIG.PredictionTime)
 
-        -- Directly set the camera CFrame to target the predicted position
+        -- Directly set the camera CFrame to target the predicted head position
         Camera.CFrame = CFrame.new(Camera.CFrame.Position, predictedPosition)
 
+        -- Check if the target player was killed
+        if not targetPlayer.Character:FindFirstChild("Humanoid") or targetPlayer.Character.Humanoid.Health <= 0 then
+            aiming = false
+            targetPlayer = nil
+            print("Target killed, aimlock disabled.")
+        end
+
+        -- Strafing logic (if needed)
         if strafeEnabled then
             if tick() - lastDirectionChange > directionChangeInterval then
                 strafeAngle = math.random(0, 360)
@@ -193,9 +185,11 @@ UserInputService.InputBegan:Connect(function(input, processed)
         aiming = not aiming
         if aiming then
             targetPlayer = getClosestPlayerToCursor()
+            mousePositionLocked = Vector2.new(LocalPlayer:GetMouse().X, LocalPlayer:GetMouse().Y) -- Lock mouse position
             print(aiming and targetPlayer)
         else
             targetPlayer = nil
+            mousePositionLocked = nil -- Unlock mouse when not aiming
             print("Aimlock disabled.")
         end
     elseif input.KeyCode == Enum.KeyCode.Y then
@@ -235,6 +229,7 @@ local function updateAllPlayerESP()
     end
 end
 
+-- Main loop to update ESP and aimbot
 RunService.RenderStepped:Connect(function()
     updateAllPlayerESP()
     handleAimlockAndStrafe()
