@@ -8,10 +8,10 @@ local CONFIG = {
     StrafeSpeed = 10,
     CircleColor = Color3.fromRGB(255, 255, 255),
     CircleRadius = 0,
-    AimbotSmoothness = 5, 
+    AimbotSmoothness = 5,
     HeadshotPredictionTime = 0.079,
     AimbotFOV = 90,
-    StrafeRandomRange = 60, 
+    StrafeRandomRange = 60,
 }
 
 local Players = game:GetService("Players")
@@ -116,40 +116,37 @@ local function getClosestPlayerToCursor()
     return closestPlayer
 end
 
-local function predictFuturePosition(character, predictionTime)
+local function predictHitPosition(character, predictionTime)
     local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
     if not humanoidRootPart then
         return Vector3.new(0, 0, 0)
     end
-    local velocity = humanoidRootPart.AssemblyLinearVelocity
-    local acceleration = humanoidRootPart.AssemblyAngularVelocity
-    return humanoidRootPart.Position + (velocity * predictionTime) + (0.5 * acceleration * predictionTime^2)
-end
 
-local function predictHeadshotPosition(character, predictionTime)
-    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-    if not humanoidRootPart then
-        return Vector3.new(0, 0, 0)
+    -- Determine if we are aiming for head or body based on random chance (80% for head, 20% for body)
+    local targetPart
+    if math.random(1, 100) <= 80 then
+        -- 80% chance to hit head
+        targetPart = character:FindFirstChild("Head")
+    else
+        -- 20% chance to hit body (HumanoidRootPart)
+        targetPart = humanoidRootPart
     end
-    local head = character:FindFirstChild("Head")
-    if not head then
-        return humanoidRootPart.Position
+
+    if not targetPart then
+        -- If no head is found, fallback to body (HumanoidRootPart)
+        targetPart = humanoidRootPart
     end
-    local headPosition = head.Position
+
+    local targetPosition = targetPart.Position
     local velocity = humanoidRootPart.AssemblyLinearVelocity
     local acceleration = humanoidRootPart.AssemblyAngularVelocity
-    return headPosition + (velocity * predictionTime) + (0.5 * acceleration * predictionTime^2)
+    return targetPosition + (velocity * predictionTime) + (0.5 * acceleration * predictionTime^2)
 end
 
 local function handleAimlockAndStrafe()
     if aiming and targetPlayer and targetPlayer.Character then
         local character = targetPlayer.Character
-        local predictedPosition
-        if CONFIG.AimbotFOV >= 90 then
-            predictedPosition = predictFuturePosition(character, CONFIG.PredictionTime)
-        else
-            predictedPosition = predictHeadshotPosition(character, CONFIG.HeadshotPredictionTime)
-        end
+        local predictedPosition = predictHitPosition(character, CONFIG.PredictionTime)
 
         -- Directly set the camera CFrame to target the predicted position
         Camera.CFrame = CFrame.new(Camera.CFrame.Position, predictedPosition)
@@ -192,23 +189,19 @@ end
 
 UserInputService.InputBegan:Connect(function(input, processed)
     if processed then return end
-    if input.KeyCode == Enum.KeyCode.Q then
+    if input.KeyCode == Enum.KeyCode.X then
         aiming = not aiming
         if aiming then
             targetPlayer = getClosestPlayerToCursor()
-            print(aiming and targetPlayer and "Aimlock enabled. Targeting: " .. targetPlayer.Name or "No target found.")
+            print(aiming and targetPlayer)
         else
             targetPlayer = nil
             print("Aimlock disabled.")
         end
     elseif input.KeyCode == Enum.KeyCode.Y then
-        strafeEnabled = not strafeEnabled
-        print(strafeEnabled and "Target strafe enabled." or "Target strafe disabled.")
-    elseif input.KeyCode == Enum.KeyCode.X then
-        aiming = false
-        strafeEnabled = false
-        targetPlayer = nil
-        print("Fully unlocked. Aimlock and strafe disabled.")
+        print("Target strafe is patched.")
+    elseif input.KeyCode == Enum.KeyCode.Y then
+        print("Useless function called, strafe is patched.")
     end
 end)
 
@@ -216,9 +209,7 @@ local function onChatMessage(message)
     if message:lower() == ".binds" then
         local bindsInfo = [[
 Commands:
-  Q - Toggle aimlock (lock on/off target)
-  Y - Toggle target strafe (spin around the target)
-  X - Fully unlock (disable aimlock and strafe)
+  E - Toggle aimlock (lock on/off target)
 ]]
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Head") then
             Chat:Chat(LocalPlayer.Character.Head, bindsInfo, Enum.ChatColor.Blue)
@@ -233,76 +224,18 @@ local function updateAllPlayerESP()
         if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             local humanoidRootPart = player.Character.HumanoidRootPart
             local screenPosition, onScreen = Camera:WorldToViewportPoint(humanoidRootPart.Position)
-            -- Only update ESP if the player is in view
             if onScreen then
                 updatePlayerESP(player)
             else
                 removeHighlight(player.Character)
-                local circle = circleIndicators[player.Character]
-                if circle then
-                    circle:Destroy()
-                end
             end
+        else
+            removeHighlight(player.Character)
         end
-    end
-end
-
-local function refreshPlayerESP(player)
-    if player.Character then
-        updatePlayerESP(player)
     end
 end
 
 RunService.RenderStepped:Connect(function()
-    if CONFIG.ESPEnabled then
-        updateAllPlayerESP()
-    else
-        for _, player in ipairs(Players:GetPlayers()) do
-            if player.Character then
-                removeHighlight(player.Character)
-                local circle = circleIndicators[player.Character]
-                if circle then
-                    circle:Destroy()
-                end
-            end
-        end
-    end
+    updateAllPlayerESP()
     handleAimlockAndStrafe()
 end)
-
-local function onPlayerAdded(player)
-    player.CharacterAdded:Connect(function()
-        refreshPlayerESP(player)
-    end)
-end
-
-local function onCharacterAdded(character)
-    HumanoidRootPart = character:WaitForChild("HumanoidRootPart")
-    updateAllPlayerESP()
-end
-
-local function onPlayerRemoving(player)
-    if player.Character then
-        removeHighlight(player.Character)
-        local circle = circleIndicators[player.Character]
-        if circle then
-            circle:Destroy()
-        end
-    end
-end
-
-local function onCharacterRemoving(character)
-    removeHighlight(character)
-    local circle = circleIndicators[character]
-    if circle then
-        circle:Destroy()
-    end
-end
-
--- Connect to player events
-Players.PlayerAdded:Connect(onPlayerAdded)
-Players.PlayerRemoving:Connect(onPlayerRemoving)
-
--- Connect to character events for the local player
-LocalPlayer.CharacterAdded:Connect(onCharacterAdded)
-LocalPlayer.CharacterRemoving:Connect(onCharacterRemoving)    
