@@ -192,7 +192,7 @@ end
 
 UserInputService.InputBegan:Connect(function(input, processed)
     if processed then return end
-    if input.KeyCode == Enum.KeyCode.E then
+    if input.KeyCode == Enum.KeyCode.X then
         aiming = not aiming
         if aiming then
             targetPlayer = getClosestPlayerToCursor()
@@ -203,7 +203,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
         end
     elseif input.KeyCode == Enum.KeyCode.Y then
         print("Target strafe is patched.")
-    elseif input.KeyCode == Enum.KeyCode.X then
+    elseif input.KeyCode == Enum.KeyCode.Y then
         print("Useless function called, strafe is patched.")
     end
 end)
