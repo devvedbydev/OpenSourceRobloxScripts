@@ -257,11 +257,15 @@ game.Players.PlayerAdded:Connect(function(Player)
 	TBINSERT(_G.Skeletons, Library:NewSkeleton(Player, true))
 end)
 
-while true do
-	for _, skeleton in next, _G.Skeletons do
-		skeleton:SetColor(Color3.fromRGB(127, 3, 252)) -- Purple
-		skeleton:SetThickness(4) -- Thicker lines
-	end
+-- Coroutine for updating all skeletons
+coroutine.wrap(function()
+	while true do
+		for _, skeleton in next, _G.Skeletons do
+			skeleton:SetColor(Color3.fromRGB(127, 3, 252)) -- Purple
+			skeleton:SetThickness(4) -- Thicker lines
+		end
 
-	WAIT(1)
-end
+		WAIT(1)
+	end
+end)()
+
