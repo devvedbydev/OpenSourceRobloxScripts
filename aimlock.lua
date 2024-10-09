@@ -11,6 +11,8 @@ local CONFIG = {
     StrafeRandomRange = 60,
 }
 
+local StrafeGlobal = false  -- Global toggle for strafe feature
+
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -73,7 +75,7 @@ local function handleAimlockAndStrafe()
             print("Target killed, aimlock disabled.")
         end
 
-        if strafeEnabled then
+        if strafeEnabled and StrafeGlobal then  -- Check if strafe is enabled and globally usable
             -- Make the character spin around the target
             local humanoidRootPart = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
             if humanoidRootPart then
@@ -128,11 +130,16 @@ UserInputService.InputBegan:Connect(function(input, processed)
         end
     elseif input.KeyCode == Enum.KeyCode.Y then
         if targetPlayer then
-            strafeEnabled = not strafeEnabled
-            if strafeEnabled then
-                print("Strafe enabled.")
+            -- Toggle strafe only if it's globally usable
+            if StrafeGlobal then
+                strafeEnabled = not strafeEnabled
+                if strafeEnabled then
+                    print("Strafe enabled.")
+                else
+                    print("Strafe disabled.")
+                end
             else
-                print("Strafe disabled.")
+                print("Strafe is globally disabled.")
             end
         else
             print("No target.")
