@@ -20,7 +20,7 @@ local Camera = workspace.CurrentCamera
 
 local targetPlayer = nil
 local aiming = false
-local strafeEnabled = CONFIG.TargetStrafe
+local strafeEnabled = false
 local strafeAngle = 0
 local circleIndicators = {}
 local currentStrafeSpeed = CONFIG.StrafeSpeed
