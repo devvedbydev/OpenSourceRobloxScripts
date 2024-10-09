@@ -15,6 +15,8 @@ local scripts = {
     { url = "https://raw.githubusercontent.com/devvedbydev/Systemhook/refs/heads/main/cursor.lua", name = "Cursor" },
     { url = "https://raw.githubusercontent.com/devvedbydev/Systemhook/refs/heads/main/esp.lua", name = "Skeleton ESP" },
     { url = "https://raw.githubusercontent.com/devvedbydev/Systemhook/refs/heads/main/overlay.lua", name = "Overlay" },
+    { url = "https://raw.githubusercontent.com/devvedbydev/Systemhook/refs/heads/main/flyto.lua", name = "Fly / TP" },
+
 }
 
 for _, script in ipairs(scripts) do
