@@ -50,6 +50,7 @@ local function createBillboard(player)
 
     -- Ensure player character is set up properly
     local function onCharacterAdded(character)
+        -- Wait for the head to exist before proceeding
         local head = character:WaitForChild("Head", 10)
         if head then
             billboard.Adornee = head
@@ -68,6 +69,9 @@ local function createBillboard(player)
                     billboard.Parent = nil
                 end
             end)
+        else
+            -- Retry if the head is not found
+            warn("Head not found for player:", player.Name)
         end
     end
 
@@ -94,13 +98,5 @@ end
 
 -- Handle players joining the game
 Players.PlayerAdded:Connect(function(player)
-    -- Attach BillboardGui when their character spawns
-    player.CharacterAdded:Connect(function(character)
-        createBillboard(player)
-    end)
-
-    -- If their character already exists (unlikely but possible), set it up immediately
-    if player.Character then
-        createBillboard(player)
-    end
+    setupPlayer(player)
 end)
