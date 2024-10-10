@@ -1,5 +1,5 @@
 local CONFIG = {
-    PredictionTime = 0.114,
+    PredictionTime = 0.1,
     TargetStrafe = false,
     StrafeDistance = 20,
     StrafeSpeed = 10,
