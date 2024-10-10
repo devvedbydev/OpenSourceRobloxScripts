@@ -1,12 +1,12 @@
 local CONFIG = {
-    PredictionTime = 0.067,
+    PredictionTime = 0.114,
     TargetStrafe = false,
     StrafeDistance = 20,
     StrafeSpeed = 10,
     CircleColor = Color3.fromRGB(255, 255, 255),
     CircleRadius = 0,
     AimbotSmoothness = 5,
-    HeadshotPredictionTime = 0.079,
+    HeadshotPredictionTime = PredictionTime,
     AimbotFOV = 90,
     StrafeRandomRange = 60,
 }
