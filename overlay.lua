@@ -64,9 +64,9 @@ local function createOverlay()
     statusLabel.Size = UDim2.new(1, 0, 0, 20)
     statusLabel.BackgroundTransparency = 1
     if LocalPlayer.Name == "hitbydev" then
-        statusLabel.Text = "Status: Developer"
+        statusLabel.Text = "Rank: Developer"
     else
-        statusLabel.Text = "Status: Member"
+        statusLabel.Text = "Rank: User"
     end
     statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     statusLabel.Font = Enum.Font.GothamBold
