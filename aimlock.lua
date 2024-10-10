@@ -11,7 +11,7 @@ local CONFIG = {
     StrafeRandomRange = 60,
 }
 
-local StrafeGlobal = false  -- Global toggle for strafe feature
+local StrafeGlobal = true  -- Global toggle for strafe feature
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
