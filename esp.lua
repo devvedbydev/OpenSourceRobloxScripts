@@ -4,9 +4,9 @@ local TextService = game:GetService("TextService")
 -- Function to calculate the width based on the name length
 local function calculateWidth(name)
     if type(name) ~= "string" then
-        return UDim2.new(0, 0, 0, 20) -- Return a default size if name is not a string
+        return UDim2.new(0, 0, 0, 20) -- Default size if the name is invalid
     end
-    
+
     local textSize = TextService:GetTextSize(name, 14, Enum.Font.GothamBold, Vector2.new(1000, 1000))
     return UDim2.new(0, textSize.X + 10, 0, 20) -- Add padding for the frame
 end
@@ -16,12 +16,12 @@ local function createBillboard(player)
     -- Ensure the player has a character
     if not player.Character then return end
 
+    -- Create BillboardGui and Frame
     local billboard = Instance.new("BillboardGui")
     billboard.Size = calculateWidth(player.DisplayName or "Player")
     billboard.StudsOffset = Vector3.new(0, 2, 0)
     billboard.AlwaysOnTop = true
 
-    -- Create Frame for background
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(1, 0, 1, 0)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -48,7 +48,7 @@ local function createBillboard(player)
     nameLabel.TextXAlignment = Enum.TextXAlignment.Center
     nameLabel.Parent = frame
 
-    -- Update name and size if necessary
+    -- Update name and size dynamically
     local function updateName()
         local displayName = player.DisplayName
         if type(displayName) == "string" and displayName ~= "" then
@@ -59,51 +59,42 @@ local function createBillboard(player)
 
     player:GetPropertyChangedSignal("DisplayName"):Connect(updateName)
 
-    -- Update the billboard position and size when the character is added or respawned
+    -- Attach BillboardGui to player's head when they spawn
     local function onCharacterAdded(character)
-        if not character:IsA("Model") then return end -- Check if the character is a valid model
+        if not character:IsA("Model") then return end -- Ensure it's a valid character
 
-        local head = character:WaitForChild("Head", 5) -- Ensure head is available with a timeout
+        local head = character:WaitForChild("Head", 5) -- Get head part with timeout
         if head then
             billboard.Adornee = head
+            billboard.Parent = game.Workspace -- Attach BillboardGui to the world
+            updateName() -- Update name display
 
-            -- Attempt to parent the billboard and handle errors silently
-            local success = pcall(function()
-                billboard.Parent = game.Workspace -- Parent the billboard
-            end)
-
-            if not success then
-                return -- Exit if we can't parent the BillboardGui
-            end
-
-            -- Update size initially
-            updateName()
-
-            -- Cleanup the billboard when the character dies
+            -- Cleanup billboard when player dies or character is removed
             local humanoid = character:WaitForChild("Humanoid", 5)
             if humanoid then
                 humanoid.Died:Connect(function()
-                    billboard:Destroy() -- Destroy billboard on death
+                    billboard.Parent = nil -- Temporarily remove on death
                 end)
             end
 
-            -- Additional check for character destruction
+            -- Reattach BillboardGui if the character is removed from the hierarchy
             character.AncestryChanged:Connect(function(_, parent)
                 if not parent then
-                    billboard:Destroy() -- Destroy the billboard if the character is removed from the hierarchy
+                    billboard.Parent = nil -- Remove the BillboardGui if the character is gone
                 end
             end)
         end
     end
 
+    -- Set up character added/respawn handling
     player.CharacterAdded:Connect(onCharacterAdded)
 
-    -- If player is already in the game, set up their character
+    -- If the player already has a character, set up the BillboardGui immediately
     if player.Character then
         onCharacterAdded(player.Character)
     end
 
-    -- Cleanup when player leaves
+    -- Cleanup billboard when player leaves
     Players.PlayerRemoving:Connect(function(p)
         if p == player and billboard then
             billboard:Destroy()
