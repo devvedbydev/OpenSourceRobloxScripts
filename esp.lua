@@ -74,6 +74,7 @@ local function createBillboard(player)
     -- Handle respawn and character removal
     player.CharacterAdded:Connect(onCharacterAdded)
 
+    -- If the player's character already exists, handle it immediately
     if player.Character then
         onCharacterAdded(player.Character)
     end
@@ -81,10 +82,25 @@ local function createBillboard(player)
     player:GetPropertyChangedSignal("DisplayName"):Connect(updateName)
 end
 
--- Create BillboardGui for existing players
-for _, player in pairs(Players:GetPlayers()) do
+-- Function to setup BillboardGui for new players
+local function setupPlayer(player)
     createBillboard(player)
 end
 
--- Create BillboardGui for new players
-Players.PlayerAdded:Connect(createBillboard)
+-- Create BillboardGui for all players already in the game
+for _, player in pairs(Players:GetPlayers()) do
+    setupPlayer(player)
+end
+
+-- Handle players joining the game
+Players.PlayerAdded:Connect(function(player)
+    -- Attach BillboardGui when their character spawns
+    player.CharacterAdded:Connect(function(character)
+        createBillboard(player)
+    end)
+
+    -- If their character already exists (unlikely but possible), set it up immediately
+    if player.Character then
+        createBillboard(player)
+    end
+end)
