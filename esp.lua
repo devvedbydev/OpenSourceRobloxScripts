@@ -9,12 +9,12 @@ end
 
 -- Create BillboardGui for the player
 local function createBillboard(player)
-    -- Create BillboardGui
     local billboard = Instance.new("BillboardGui")
-    billboard.Size = calculateWidth(player.DisplayName) -- Set initial size based on the name
     billboard.Adornee = player.Character:WaitForChild("Head")
     billboard.StudsOffset = Vector3.new(0, 2, 0) -- Offset above the head
     billboard.AlwaysOnTop = true
+    billboard.Size = calculateWidth(player.DisplayName) -- Set initial size based on the name
+    billboard.Parent = game.Workspace
 
     -- Create Frame for background
     local frame = Instance.new("Frame")
@@ -43,8 +43,6 @@ local function createBillboard(player)
     nameLabel.TextXAlignment = Enum.TextXAlignment.Center
     nameLabel.Parent = frame
 
-    billboard.Parent = game.Workspace
-
     -- Update name and size if necessary
     local function updateName()
         nameLabel.Text = player.DisplayName
@@ -52,6 +50,18 @@ local function createBillboard(player)
     end
 
     player:GetPropertyChangedSignal("DisplayName"):Connect(updateName)
+
+    -- Ensure the billboard is updated when the character respawns
+    player.CharacterRemoving:Connect(function()
+        billboard:Destroy()
+    end)
+
+    player.CharacterAdded:Connect(function(character)
+        character:WaitForChild("Head") -- Ensure head is available
+        billboard.Adornee = character.Head -- Update the adornee to the new character head
+        billboard.Parent = game.Workspace -- Reparent the billboard
+        updateName() -- Update name on respawn
+    end)
 
     -- Cleanup when player leaves
     Players.PlayerRemoving:Connect(function(p)
@@ -63,8 +73,8 @@ end
 
 -- Create BillboardGui for all players
 local function setupPlayer(player)
-    player.CharacterAdded:Connect(function()
-        player.Character:WaitForChild("HumanoidRootPart") -- Wait for character to load
+    player.CharacterAdded:Connect(function(character)
+        character:WaitForChild("HumanoidRootPart") -- Wait for character to load
         createBillboard(player)
     end)
 
