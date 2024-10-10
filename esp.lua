@@ -7,20 +7,23 @@ local function calculateWidth(name)
         return UDim2.new(0, 0, 0, 20) -- Return a default size if name is not a string
     end
     
-    local textSize = TextService:GetTextSize(name, 14, Enum.Font.GothamBold, Vector2.new(1000, 1000)) -- Calculate size based on text properties
+    local textSize = TextService:GetTextSize(name, 14, Enum.Font.GothamBold, Vector2.new(1000, 1000))
     return UDim2.new(0, textSize.X + 10, 0, 20) -- Add padding for the frame
 end
 
 -- Function to create a BillboardGui for the player
 local function createBillboard(player)
+    -- Ensure the player has a character
+    if not player.Character then return end
+
     local billboard = Instance.new("BillboardGui")
-    billboard.Size = calculateWidth(player.DisplayName or "Player") -- Set initial size based on the name
-    billboard.StudsOffset = Vector3.new(0, 2, 0) -- Offset above the head
+    billboard.Size = calculateWidth(player.DisplayName or "Player")
+    billboard.StudsOffset = Vector3.new(0, 2, 0)
     billboard.AlwaysOnTop = true
 
     -- Create Frame for background
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, 0, 1, 0) -- Full size of the BillboardGui
+    frame.Size = UDim2.new(1, 0, 1, 0)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     frame.BackgroundTransparency = 0.3
     frame.Parent = billboard
@@ -38,10 +41,10 @@ local function createBillboard(player)
     local nameLabel = Instance.new("TextLabel")
     nameLabel.Size = UDim2.new(1, 0, 1, 0)
     nameLabel.BackgroundTransparency = 1
-    nameLabel.Text = player.DisplayName or "Player" -- Fallback name if DisplayName is nil
+    nameLabel.Text = player.DisplayName or "Player"
     nameLabel.TextColor3 = Color3.fromRGB(199, 127, 235)
     nameLabel.Font = Enum.Font.GothamBold
-    nameLabel.TextSize = 14 -- Adjust text size for clarity
+    nameLabel.TextSize = 14
     nameLabel.TextXAlignment = Enum.TextXAlignment.Center
     nameLabel.Parent = frame
 
@@ -50,7 +53,7 @@ local function createBillboard(player)
         local displayName = player.DisplayName
         if type(displayName) == "string" and displayName ~= "" then
             nameLabel.Text = displayName
-            billboard.Size = calculateWidth(displayName) -- Adjust size based on new name
+            billboard.Size = calculateWidth(displayName)
         end
     end
 
@@ -58,10 +61,21 @@ local function createBillboard(player)
 
     -- Update the billboard position and size when the character is added or respawned
     local function onCharacterAdded(character)
+        if not character:IsA("Model") then return end -- Check if the character is a valid model
+
         local head = character:WaitForChild("Head", 5) -- Ensure head is available with a timeout
         if head then
-            billboard.Adornee = head -- Update the adornee to the character's head
-            billboard.Parent = game.Workspace -- Reparent the billboard
+            billboard.Adornee = head
+
+            -- Attempt to parent the billboard and handle errors
+            local success, err = pcall(function()
+                billboard.Parent = game.Workspace -- Parent the billboard
+            end)
+
+            if not success then
+                warn("Failed to parent BillboardGui: " .. tostring(err))
+                return -- Exit if we can't parent the BillboardGui
+            end
 
             -- Update size initially
             updateName()
@@ -70,9 +84,20 @@ local function createBillboard(player)
             local humanoid = character:WaitForChild("Humanoid", 5)
             if humanoid then
                 humanoid.Died:Connect(function()
-                    billboard:Destroy() -- Destroy billboard on death
+                    if billboard and billboard.Parent then
+                        billboard:Destroy() -- Destroy billboard on death
+                    end
                 end)
             end
+
+            -- Additional check for character destruction
+            character.AncestryChanged:Connect(function(_, parent)
+                if not parent then
+                    billboard:Destroy() -- Destroy the billboard if the character is removed from the hierarchy
+                end
+            end)
+        else
+            warn("Head not found for player: " .. player.Name)
         end
     end
 
@@ -85,7 +110,7 @@ local function createBillboard(player)
 
     -- Cleanup when player leaves
     Players.PlayerRemoving:Connect(function(p)
-        if p == player then
+        if p == player and billboard then
             billboard:Destroy()
         end
     end)
@@ -108,12 +133,18 @@ Players.PlayerAdded:Connect(setupPlayer)
 while true do
     wait(1) -- Update every second
     for _, player in pairs(Players:GetPlayers()) do
-        if player.Character and player.Character:FindFirstChild("Head") then
-            local billboard = player.Character:FindFirstChildOfClass("BillboardGui") -- Use FindFirstChildOfClass for better search
-            if billboard then
-                billboard.Adornee = player.Character.Head -- Ensure the adornee is correct
+        if player.Character then
+            local head = player.Character:FindFirstChild("Head")
+            if head then
+                local billboard = player.Character:FindFirstChildOfClass("BillboardGui")
+                if billboard then
+                    billboard.Adornee = head -- Ensure the adornee is correct
+                    billboard.Size = calculateWidth(player.DisplayName or "Player") -- Update size if needed
+                else
+                    setupPlayer(player) -- If the billboard doesn't exist, create it
+                end
             else
-                setupPlayer(player) -- If the billboard doesn't exist, create it
+                warn("Head not found for player: " .. player.Name)
             end
         end
     end
