@@ -67,13 +67,12 @@ local function createBillboard(player)
         if head then
             billboard.Adornee = head
 
-            -- Attempt to parent the billboard and handle errors
-            local success, err = pcall(function()
+            -- Attempt to parent the billboard and handle errors silently
+            local success = pcall(function()
                 billboard.Parent = game.Workspace -- Parent the billboard
             end)
 
             if not success then
-                warn("Failed to parent BillboardGui: " .. tostring(err))
                 return -- Exit if we can't parent the BillboardGui
             end
 
@@ -84,9 +83,7 @@ local function createBillboard(player)
             local humanoid = character:WaitForChild("Humanoid", 5)
             if humanoid then
                 humanoid.Died:Connect(function()
-                    if billboard and billboard.Parent then
-                        billboard:Destroy() -- Destroy billboard on death
-                    end
+                    billboard:Destroy() -- Destroy billboard on death
                 end)
             end
 
@@ -96,8 +93,6 @@ local function createBillboard(player)
                     billboard:Destroy() -- Destroy the billboard if the character is removed from the hierarchy
                 end
             end)
-        else
-            warn("Head not found for player: " .. player.Name)
         end
     end
 
@@ -128,24 +123,3 @@ end
 
 -- Setup new players joining the game
 Players.PlayerAdded:Connect(setupPlayer)
-
--- Regularly update all billboards
-while true do
-    wait(1) -- Update every second
-    for _, player in pairs(Players:GetPlayers()) do
-        if player.Character then
-            local head = player.Character:FindFirstChild("Head")
-            if head then
-                local billboard = player.Character:FindFirstChildOfClass("BillboardGui")
-                if billboard then
-                    billboard.Adornee = head -- Ensure the adornee is correct
-                    billboard.Size = calculateWidth(player.DisplayName or "Player") -- Update size if needed
-                else
-                    setupPlayer(player) -- If the billboard doesn't exist, create it
-                end
-            else
-                warn("Head not found for player: " .. player.Name)
-            end
-        end
-    end
-end
