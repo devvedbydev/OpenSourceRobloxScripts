@@ -12,7 +12,7 @@ local CONFIG = {
     ShowFOVCircle = true, -- Toggle visibility of FOV circle
     FOVCircleColor = Color3.fromRGB(127, 3, 252), -- New purple color for FOV circle
     FOVCircleRadius = 300, -- Radius matching AimbotFOV
-    FOVCircleTransparency = 0.3,
+    FOVCircleTransparency = 1,
 }
 
 local StrafeGlobal = true  -- Global toggle for strafe feature
