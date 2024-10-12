@@ -1,12 +1,12 @@
 local CONFIG = {
-    PredictionTime = 0.1,
+    PredictionTime = 0,
     TargetStrafe = false,
     StrafeDistance = 20,
     StrafeSpeed = 10,
     CircleColor = Color3.fromRGB(255, 255, 255),
     CircleRadius = 0, -- Circle will be used for strafe
     AimbotSmoothness = 5,
-    HeadshotPredictionTime = 0.1,
+    HeadshotPredictionTime = 0,
     AimbotFOV = 300, -- Increase FOV for larger area
     StrafeRandomRange = 60,
     ShowFOVCircle = true, -- Toggle visibility of FOV circle
