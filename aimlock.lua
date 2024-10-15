@@ -49,6 +49,7 @@ local function updateFOVCircle()
     if FOVCircle and CONFIG.ShowFOVCircle then
         local mouse = LocalPlayer:GetMouse()
         FOVCircle.Position = Vector2.new(mouse.X, mouse.Y)
+        FOVCircle.Visible = true
     elseif FOVCircle then
         FOVCircle.Visible = false
     end
@@ -77,37 +78,34 @@ local function getClosestPlayerToCursor()
 end
 
 local function predictHeadPosition(character, predictionTime)
-    -- Use the prediction time from CONFIG and only use velocity for prediction.
     local head = character:FindFirstChild("Head")
     if not head then return Vector3.new(0, 0, 0) end
 
-    -- Get the position and velocity
     local headPosition = head.Position
     local velocity = character.HumanoidRootPart.AssemblyLinearVelocity
-
-    -- Predict future position based solely on the given prediction time
     return headPosition + (velocity * predictionTime)
 end
 
--- Adjust the aim handling to use the CONFIG.PredictionTime without additional adjustments
+local function smoothAim(currentCFrame, targetPosition, smoothness)
+    local targetCFrame = CFrame.new(currentCFrame.Position, targetPosition)
+    return currentCFrame:Lerp(targetCFrame, smoothness / 10)
+end
+
 local function handleAimlockAndStrafe()
     if aiming and targetPlayer and targetPlayer.Character then
         local character = targetPlayer.Character
         local predictedPosition = predictHeadPosition(character, CONFIG.PredictionTime)
 
-        -- Smooth aiming to the predicted position using CONFIG values
+        -- Smooth aiming
         Camera.CFrame = smoothAim(Camera.CFrame, predictedPosition, CONFIG.AimbotSmoothness)
 
-        -- Target killed or aimlock conditions
         if not targetPlayer.Character:FindFirstChild("Humanoid") or targetPlayer.Character.Humanoid.Health <= 0 then
             aiming = false
             targetPlayer = nil
             print("Target killed, aimlock disabled.")
         end
 
-        -- Handle strafing if enabled
         if strafeEnabled and StrafeGlobal then
-            -- Strafe logic remains unchanged
             local humanoidRootPart = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
             if humanoidRootPart then
                 if tick() - lastDirectionChange > directionChangeInterval then
@@ -122,6 +120,7 @@ local function handleAimlockAndStrafe()
 
                 humanoidRootPart.CFrame = CFrame.new(strafePosition.Position, character.HumanoidRootPart.Position)
 
+                -- Create or update circle indicator
                 local circle = circleIndicators[character] or character:FindFirstChild("CircleIndicator")
                 if not circle then
                     circle = Instance.new("BillboardGui")
