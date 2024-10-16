@@ -23,7 +23,6 @@ local RunService = game:GetService("RunService")
 local Chat = game:GetService("Chat")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
-local NetworkStatsService = game:GetService("NetworkClient"):GetPlayerPing()
 
 local targetPlayer = nil
 local aiming = false
@@ -90,26 +89,6 @@ end
 local function smoothAim(currentCFrame, targetPosition, smoothness)
     local targetCFrame = CFrame.new(currentCFrame.Position, targetPosition)
     return currentCFrame:Lerp(targetCFrame, smoothness / 10)
-end
-
-local function adjustPredictionTime()
-    -- Fetch current ping
-    local ping = NetworkStatsService:GetPing()
-    
-    -- Adjust PredictionTime based on ping value
-    if ping < 60 then
-        CONFIG.PredictionTime = 0.03
-    elseif ping < 100 then
-        CONFIG.PredictionTime = 0.06
-    elseif ping < 150 then
-        CONFIG.PredictionTime = 0.1
-    elseif ping < 200 then
-        CONFIG.PredictionTime = 0.15
-    else
-        CONFIG.PredictionTime = 0.2
-    end
-
-    print("PredictionTime adjusted to:", CONFIG.PredictionTime)
 end
 
 local function handleAimlockAndStrafe()
@@ -208,7 +187,6 @@ end
 LocalPlayer.Chatted:Connect(onChatMessage)
 
 RunService.RenderStepped:Connect(function()
-    adjustPredictionTime() -- Adjust prediction based on ping
     handleAimlockAndStrafe()
     updateFOVCircle()
 end)
