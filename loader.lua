@@ -1,7 +1,7 @@
 local function loadScript(url, scriptName)
     print("Starting to load: " .. scriptName)
     local success, err = pcall(function()
-        loadstring(HttpGet(url))()
+        loadstring(game:HttpGet(url))()
     end)
     if success then
         print(scriptName .. " loaded successfully.")
