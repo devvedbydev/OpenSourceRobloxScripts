@@ -13,11 +13,9 @@ end
 local scripts = {
     { url = "https://raw.githubusercontent.com/devvedbydev/Systemhook/refs/heads/main/aimlock.lua", name = "Aim Lock" },
     { url = "https://raw.githubusercontent.com/devvedbydev/Systemhook/refs/heads/main/cursor.lua", name = "Cursor" },
-    { url = "https://raw.githubusercontent.com/devvedbydev/Systemhook/refs/heads/main/esp.lua", name = "Skeleton ESP" },
+    { url = "https://raw.githubusercontent.com/devvedbydev/Systemhook/refs/heads/main/ESP/ESPLoader.lua", name = "ESP" },
     { url = "https://raw.githubusercontent.com/devvedbydev/Systemhook/refs/heads/main/overlay.lua", name = "Overlay" },
     { url = "https://raw.githubusercontent.com/devvedbydev/Systemhook/refs/heads/main/flyto.lua", name = "Fly / TP" },
-    { url = "https://raw.githubusercontent.com/devvedbydev/Systemhook/refs/heads/main/antilock.lua", name = "Antilock" },
-
 }
 
 for _, script in ipairs(scripts) do
