@@ -1,6 +1,6 @@
 _G.Keybind = Enum.KeyCode.Z
 
-local speedMultiplier = 0.5    
+local speedMultiplier = 1    
 local active = false           
 local UserInputService = game:GetService('UserInputService')
 local RunService = game:GetService('RunService')
