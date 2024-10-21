@@ -5,9 +5,8 @@ local rs = game:GetService("RunService")
 
 local function esp(p, cr)
     local h = cr:WaitForChild("Humanoid", 5)
-    local hrp = cr:WaitForChild("Head", 5)
 
-    if not h or not hrp then return end
+    if not h or not cr.PrimaryPart then return end
 
     local text = Drawing.new("Text")
     text.Visible = false
@@ -36,12 +35,16 @@ local function esp(p, cr)
     end)
 
     connectionRender = rs.RenderStepped:Connect(function()
-        local hrp_pos, hrp_onscreen = c:WorldToViewportPoint(hrp.Position)
-        if hrp_onscreen then
-            local distance = (hrp.Position - lp.Character.HumanoidRootPart.Position).Magnitude
-            text.Position = Vector2.new(hrp_pos.X, hrp_pos.Y - 50)
-            text.Text = "[ " .. p.DisplayName .. " - " .. math.floor(distance) .. "M ]"
-            text.Visible = true
+        if cr.PrimaryPart then
+            local part_pos, part_onscreen = c:WorldToViewportPoint(cr.PrimaryPart.Position)
+            if part_onscreen then
+                local distance = (cr.PrimaryPart.Position - lp.Character.PrimaryPart.Position).Magnitude
+                text.Position = Vector2.new(part_pos.X, part_pos.Y - 50)
+                text.Text = "[ " .. p.DisplayName .. " - " .. math.floor(distance) .. "M ]"
+                text.Visible = true
+            else
+                text.Visible = false
+            end
         else
             text.Visible = false
         end
